@@ -32,16 +32,20 @@ namespace API_UsePrevention.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] Dto.Request.LoginRequest request)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             try
             {
-                var user = await _userService.LoginAsync(request.Email, request.Password);
-                return Ok(user);
+                var result = await _userService.LoginAsync(request);
+                return Ok(result);
             }
             catch (UnauthorizedAccessException ex)
             {
                 return Unauthorized(new { message = ex.Message });
             }
         }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)

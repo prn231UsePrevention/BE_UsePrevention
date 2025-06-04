@@ -1,4 +1,5 @@
 ﻿using Dto.Request;
+using Dto.Response;
 using Repository.Models;
 using Repository.Repositories;
 using Repository.UWO;
@@ -15,11 +16,13 @@ namespace Service.Service
     {
         private readonly IGenericRepository<User> _userRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IJwtService _jwtService;
 
-        public UserService(IGenericRepository<User> userRepository, IUnitOfWork unitOfWork)
+        public UserService(IGenericRepository<User> userRepository, IUnitOfWork unitOfWork, IJwtService jwtService)
         {
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
+            _jwtService = jwtService;
         }
 
         public async Task<User> RegisterAsync(RegisterUserDto dto)
@@ -74,16 +77,21 @@ namespace Service.Service
             }
         }
 
-        public async Task<User> LoginAsync(string email, string password)
+        public async Task<LoginResponseDto> LoginAsync(LoginRequest dto)
         {
-            var users = await _userRepository.FindAsync(u => u.Email == email);
-            var user = users.FirstOrDefault();
-            if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
-            {
+            var user = (await _userRepository.FindAsync(u => u.Email == dto.Email)).FirstOrDefault();
+
+            if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
                 throw new UnauthorizedAccessException("Email hoặc mật khẩu không đúng.");
-            }
-            return user;
+
+            var token = _jwtService.GenerateToken(user);
+
+            return new LoginResponseDto
+            {
+                Token = token,
+            };
         }
+
 
         public async Task ChangePasswordAsync(int userId, string newPassword)
         {

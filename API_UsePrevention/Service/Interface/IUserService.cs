@@ -1,4 +1,5 @@
 ﻿using Dto.Request;
+using Dto.Response;
 using Repository.Models;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace Service.Interface
         Task<IEnumerable<User>> GetByRoleAsync(string role);
         Task UpdateAsync(User user);
         Task DeleteAsync(int id);
-        Task<User> LoginAsync(string email, string password);
+        Task<LoginResponseDto> LoginAsync(LoginRequest dto);
         Task ChangePasswordAsync(int userId, string newPassword);
     }
 }
