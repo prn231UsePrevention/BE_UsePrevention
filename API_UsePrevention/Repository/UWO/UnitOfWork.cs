@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Repository.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,9 +10,16 @@ namespace Repository.UWO
 {
     public class UnitOfWork : IUnitOfWork
     {
-        public Task<int> CommitAsync()
+        private readonly DrugUsePreventionSupportSystemContext _context;
+
+        public UnitOfWork(DrugUsePreventionSupportSystemContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+        }
+
+        public async Task<int> CommitAsync()
+        {
+            return await _context.SaveChangesAsync();
         }
     }
 }

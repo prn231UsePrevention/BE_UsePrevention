@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Repository.Models;
 
 namespace API_UsePrevention.Extensions
 {
@@ -6,7 +7,7 @@ namespace API_UsePrevention.Extensions
     {
         public static IServiceCollection AddDatabaseServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<>(options =>
+            services.AddDbContext<DrugUsePreventionSupportSystemContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnectionString"))
                        .EnableSensitiveDataLogging()
             );

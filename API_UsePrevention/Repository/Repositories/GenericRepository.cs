@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Repository.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -9,39 +11,50 @@ namespace Repository.Repositories
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        public Task AddAsync(T entity)
+        private readonly DrugUsePreventionSupportSystemContext _context;
+        private readonly DbSet<T> _dbSet;
+
+        public GenericRepository(DrugUsePreventionSupportSystemContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+            _dbSet = context.Set<T>();
         }
 
-        public Task AddRangeAsync(IEnumerable<T> entities)
+        public async Task AddAsync(T entity)
         {
-            throw new NotImplementedException();
+            await _dbSet.AddAsync(entity);
+        }
+
+        public async Task AddRangeAsync(IEnumerable<T> entities)
+        {
+            await _dbSet.AddRangeAsync(entities);
         }
 
         public Task DeleteAsync(T entity)
         {
-            throw new NotImplementedException();
+            _dbSet.Remove(entity);
+            return Task.CompletedTask;
         }
 
-        public Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
+        public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return await _dbSet.Where(predicate).ToListAsync();
         }
 
-        public Task<IEnumerable<T>> GetAll()
+        public async Task<IEnumerable<T>> GetAll()
         {
-            throw new NotImplementedException();
+            return await _dbSet.ToListAsync();
         }
 
-        public Task<T> GetByIdAsync(int id)
+        public async Task<T> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _dbSet.FindAsync(id);
         }
 
         public Task UpdateAsync(T entity)
         {
-            throw new NotImplementedException();
+            _dbSet.Update(entity);
+            return Task.CompletedTask;
         }
     }
 }
