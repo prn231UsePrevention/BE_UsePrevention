@@ -1,5 +1,6 @@
 ﻿using Dto.Request;
 using Dto.Response;
+using Microsoft.EntityFrameworkCore;
 using Repository.Models;
 using Repository.Repositories;
 using Repository.UWO;
@@ -31,7 +32,7 @@ namespace Service.Service
             {
                 FullName = dto.FullName,
                 Email = dto.Email,
-                Role = dto.Role,
+                RoleId = 2,
                 DateOfBirth = dto.DateOfBirth,
                 Gender = dto.Gender,
                 CreatedAt = DateTime.UtcNow,
@@ -56,9 +57,9 @@ namespace Service.Service
             return await _userRepository.GetAll();
         }
 
-        public async Task<IEnumerable<User>> GetByRoleAsync(string role)
+        public async Task<IEnumerable<User>> GetByRoleAsync(int role)
         {
-            return await _userRepository.FindAsync(u => u.Role == role);
+            return await _userRepository.FindAsync(u => u.RoleId == role);
         }
 
         public async Task UpdateAsync(User user)
@@ -79,7 +80,9 @@ namespace Service.Service
 
         public async Task<LoginResponseDto> LoginAsync(LoginRequest dto)
         {
-            var user = (await _userRepository.FindAsync(u => u.Email == dto.Email)).FirstOrDefault();
+            var user = await _userRepository.Query()
+                .Include(u => u.Role)  
+                .FirstOrDefaultAsync(u => u.Email == dto.Email);
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
                 throw new UnauthorizedAccessException("Email hoặc mật khẩu không đúng.");

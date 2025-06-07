@@ -31,13 +31,15 @@ public partial class DrugUsePreventionSupportSystemContext : DbContext
 
     public virtual DbSet<Participation> Participations { get; set; }
 
+    public virtual DbSet<Role> Roles { get; set; }
+
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Appointment>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Appointm__3214EC07ADF12525");
+            entity.HasKey(e => e.Id).HasName("PK__Appointm__3214EC07B947CC59");
 
             entity.Property(e => e.DateTime).HasColumnType("datetime");
             entity.Property(e => e.Status)
@@ -47,17 +49,17 @@ public partial class DrugUsePreventionSupportSystemContext : DbContext
             entity.HasOne(d => d.Consultant).WithMany(p => p.Appointments)
                 .HasForeignKey(d => d.ConsultantId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Appointme__Consu__656C112C");
+                .HasConstraintName("FK__Appointme__Consu__534D60F1");
 
             entity.HasOne(d => d.User).WithMany(p => p.Appointments)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Appointme__UserI__6477ECF3");
+                .HasConstraintName("FK__Appointme__UserI__52593CB8");
         });
 
         modelBuilder.Entity<Assessment>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Assessme__3214EC0705EBD696");
+            entity.HasKey(e => e.Id).HasName("PK__Assessme__3214EC07DDD3F8D1");
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
@@ -69,7 +71,7 @@ public partial class DrugUsePreventionSupportSystemContext : DbContext
 
         modelBuilder.Entity<AssessmentResult>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Assessme__3214EC07CABFD2FE");
+            entity.HasKey(e => e.Id).HasName("PK__Assessme__3214EC07D6E40F3B");
 
             entity.Property(e => e.RiskLevel).HasMaxLength(50);
             entity.Property(e => e.TakenAt)
@@ -79,17 +81,17 @@ public partial class DrugUsePreventionSupportSystemContext : DbContext
             entity.HasOne(d => d.Assessment).WithMany(p => p.AssessmentResults)
                 .HasForeignKey(d => d.AssessmentId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Assessmen__Asses__5CD6CB2B");
+                .HasConstraintName("FK__Assessmen__Asses__4AB81AF0");
 
             entity.HasOne(d => d.User).WithMany(p => p.AssessmentResults)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Assessmen__UserI__5BE2A6F2");
+                .HasConstraintName("FK__Assessmen__UserI__49C3F6B7");
         });
 
         modelBuilder.Entity<BlogPost>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__BlogPost__3214EC07287C9568");
+            entity.HasKey(e => e.Id).HasName("PK__BlogPost__3214EC076D397DC8");
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
@@ -101,12 +103,12 @@ public partial class DrugUsePreventionSupportSystemContext : DbContext
             entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.BlogPosts)
                 .HasForeignKey(d => d.CreatedBy)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__BlogPosts__Creat__6FE99F9F");
+                .HasConstraintName("FK__BlogPosts__Creat__5DCAEF64");
         });
 
         modelBuilder.Entity<CommunityProgram>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Communit__3214EC07F4BA071A");
+            entity.HasKey(e => e.Id).HasName("PK__Communit__3214EC07B550D2A1");
 
             entity.Property(e => e.EndDate).HasColumnType("datetime");
             entity.Property(e => e.Name)
@@ -117,9 +119,9 @@ public partial class DrugUsePreventionSupportSystemContext : DbContext
 
         modelBuilder.Entity<Consultant>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Consulta__3214EC0703B15BC7");
+            entity.HasKey(e => e.Id).HasName("PK__Consulta__3214EC07A9EB9CE7");
 
-            entity.HasIndex(e => e.UserId, "UQ__Consulta__1788CC4D7D13E428").IsUnique();
+            entity.HasIndex(e => e.UserId, "UQ__Consulta__1788CC4DE92395E5").IsUnique();
 
             entity.Property(e => e.Degree).HasMaxLength(100);
             entity.Property(e => e.Specialty).HasMaxLength(100);
@@ -127,12 +129,12 @@ public partial class DrugUsePreventionSupportSystemContext : DbContext
             entity.HasOne(d => d.User).WithOne(p => p.Consultant)
                 .HasForeignKey<Consultant>(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Consultan__UserI__60A75C0F");
+                .HasConstraintName("FK__Consultan__UserI__4E88ABD4");
         });
 
         modelBuilder.Entity<Course>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Courses__3214EC076BBD0F70");
+            entity.HasKey(e => e.Id).HasName("PK__Courses__3214EC073B6739EE");
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
@@ -146,7 +148,7 @@ public partial class DrugUsePreventionSupportSystemContext : DbContext
 
         modelBuilder.Entity<Enrollment>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Enrollme__3214EC07D8D81893");
+            entity.HasKey(e => e.Id).HasName("PK__Enrollme__3214EC070BDE7D90");
 
             entity.Property(e => e.EnrollDate)
                 .HasDefaultValueSql("(getdate())")
@@ -156,17 +158,17 @@ public partial class DrugUsePreventionSupportSystemContext : DbContext
             entity.HasOne(d => d.Course).WithMany(p => p.Enrollments)
                 .HasForeignKey(d => d.CourseId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Enrollmen__Cours__5535A963");
+                .HasConstraintName("FK__Enrollmen__Cours__4316F928");
 
             entity.HasOne(d => d.User).WithMany(p => p.Enrollments)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Enrollmen__UserI__5441852A");
+                .HasConstraintName("FK__Enrollmen__UserI__4222D4EF");
         });
 
         modelBuilder.Entity<Participation>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Particip__3214EC07685D6676");
+            entity.HasKey(e => e.Id).HasName("PK__Particip__3214EC071677C531");
 
             entity.Property(e => e.JoinedAt)
                 .HasDefaultValueSql("(getdate())")
@@ -175,19 +177,30 @@ public partial class DrugUsePreventionSupportSystemContext : DbContext
             entity.HasOne(d => d.Program).WithMany(p => p.Participations)
                 .HasForeignKey(d => d.ProgramId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Participa__Progr__6C190EBB");
+                .HasConstraintName("FK__Participa__Progr__59FA5E80");
 
             entity.HasOne(d => d.User).WithMany(p => p.Participations)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Participa__UserI__6B24EA82");
+                .HasConstraintName("FK__Participa__UserI__59063A47");
+        });
+
+        modelBuilder.Entity<Role>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Roles__3214EC071F527A4F");
+
+            entity.HasIndex(e => e.Name, "UQ__Roles__737584F661CFD168").IsUnique();
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(50);
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Users__3214EC07C1226986");
+            entity.HasKey(e => e.Id).HasName("PK__Users__3214EC07D5F0D0F5");
 
-            entity.HasIndex(e => e.Email, "UQ__Users__A9D105348A7048BF").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__Users__A9D1053428D2FE25").IsUnique();
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
@@ -203,9 +216,10 @@ public partial class DrugUsePreventionSupportSystemContext : DbContext
             entity.Property(e => e.PasswordHash)
                 .IsRequired()
                 .HasMaxLength(255);
-            entity.Property(e => e.Role)
-                .IsRequired()
-                .HasMaxLength(20);
+
+            entity.HasOne(d => d.Role).WithMany(p => p.Users)
+                .HasForeignKey(d => d.RoleId)
+                .HasConstraintName("FK_Users_Roles");
         });
 
         OnModelCreatingPartial(modelBuilder);

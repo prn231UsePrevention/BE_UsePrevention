@@ -14,7 +14,7 @@ namespace Service.Interface
         Task<User> RegisterAsync(RegisterUserDto user);
         Task<User> GetByIdAsync(int id);
         Task<IEnumerable<User>> GetAllAsync();
-        Task<IEnumerable<User>> GetByRoleAsync(string role);
+        Task<IEnumerable<User>> GetByRoleAsync(int role);
         Task UpdateAsync(User user);
         Task DeleteAsync(int id);
         Task<LoginResponseDto> LoginAsync(LoginRequest dto);

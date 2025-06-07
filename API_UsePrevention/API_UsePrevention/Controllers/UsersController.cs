@@ -63,7 +63,7 @@ namespace API_UsePrevention.Controllers
         }
 
         [HttpGet("role/{role}")]
-        public async Task<IActionResult> GetByRole(string role)
+        public async Task<IActionResult> GetByRole(int role)
         {
             var users = await _userService.GetByRoleAsync(role);
             return Ok(users);
