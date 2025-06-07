@@ -18,9 +18,6 @@ namespace Dto.Request
         [Required, MinLength(6)]
         public string Password { get; set; }
 
-        [Required]
-        public string Role { get; set; } // Guest, Member, Staff, etc.
-
         public DateOnly? DateOfBirth { get; set; }
 
         public string Gender { get; set; }

@@ -56,5 +56,10 @@ namespace Repository.Repositories
             _dbSet.Update(entity);
             return Task.CompletedTask;
         }
+
+        public IQueryable<T> Query()
+        {
+            return _dbSet.AsQueryable();
+        }
     }
 }

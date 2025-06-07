@@ -2,6 +2,7 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Repository.Models;
 
@@ -15,8 +16,6 @@ public partial class User
 
     public string PasswordHash { get; set; }
 
-    public string Role { get; set; }
-
     public DateOnly? DateOfBirth { get; set; }
 
     public string Gender { get; set; }
@@ -25,15 +24,20 @@ public partial class User
 
     public bool? IsActive { get; set; }
 
+    public int? RoleId { get; set; }
+    [JsonIgnore]
+
     public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
-
+    [JsonIgnore]
     public virtual ICollection<AssessmentResult> AssessmentResults { get; set; } = new List<AssessmentResult>();
-
+    [JsonIgnore]
     public virtual ICollection<BlogPost> BlogPosts { get; set; } = new List<BlogPost>();
-
+    [JsonIgnore]
     public virtual Consultant Consultant { get; set; }
-
+    [JsonIgnore]
     public virtual ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
-
+    [JsonIgnore]
     public virtual ICollection<Participation> Participations { get; set; } = new List<Participation>();
+    [JsonIgnore]
+    public virtual Role Role { get; set; }
 }
