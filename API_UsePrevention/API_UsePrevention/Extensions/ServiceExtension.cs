@@ -1,4 +1,5 @@
-﻿using Repository.UWO;
+﻿using Microsoft.AspNetCore.Cors.Infrastructure;
+using Repository.UWO;
 using Service.Interface;
 using Service.Service;
 
@@ -12,6 +13,7 @@ namespace API_UsePrevention.Extensions
             services.AddScoped<IJwtService, JwtService>();
             services.AddScoped<ICommunityProgramService, CommunityProgramService>();
             services.AddScoped<IParticipationService, ParticipationService>();
+            services.AddScoped<ICourseService, CourseService>();
             return services;
         }
     }

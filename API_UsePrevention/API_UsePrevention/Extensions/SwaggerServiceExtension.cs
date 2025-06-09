@@ -9,30 +9,30 @@ namespace API_UsePrevention.Extensions
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Use Prevention Trading API", Version = "v1" });
+
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer",
+                    Type = SecuritySchemeType.Http, // <- dùng Http thay vì ApiKey
+                    Scheme = "bearer",              // <- scheme là bearer (chữ thường)
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
-                    Description = "Nhập token theo dạng: Bearer {token}"
+                    Description = "Nhập token (không cần chữ Bearer ở đầu)"
                 });
 
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
                 {
+                    new OpenApiSecurityScheme
                     {
-                        new OpenApiSecurityScheme
+                        Reference = new OpenApiReference
                         {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        },
-                        Array.Empty<string>()
-                    }
-                });
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    Array.Empty<string>()
+                }
+            });
             });
 
             return services;
