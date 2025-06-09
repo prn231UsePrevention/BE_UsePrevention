@@ -60,7 +60,7 @@ namespace Service.Service
             program.EndDate = dto.EndDate;
 
             await _repo.UpdateAsync(program);
-            // await _unitOfWork.CommitAsync();
+             await _unitOfWork.CommitAsync();
 
             return true;
         }

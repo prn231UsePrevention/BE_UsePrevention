@@ -12,6 +12,7 @@ namespace API_UsePrevention.Extensions
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IJwtService, JwtService>();
             services.AddScoped<ICommunityProgramService, CommunityProgramService>();
+            services.AddScoped<IParticipationService, ParticipationService>();
             services.AddScoped<ICourseService, CourseService>();
             return services;
         }
