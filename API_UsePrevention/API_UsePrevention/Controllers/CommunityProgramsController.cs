@@ -51,7 +51,7 @@ namespace API_UsePrevention.Controllers
             var result = await _service.UpdateAsync(id, dto);
             if (!result) return NotFound();
 
-            return NoContent();
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]

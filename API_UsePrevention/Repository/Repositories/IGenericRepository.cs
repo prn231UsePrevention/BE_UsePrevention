@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Repository.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -17,5 +18,8 @@ namespace Repository.Repositories
         IQueryable<T> Query();
         Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
         Task AddRangeAsync(IEnumerable<T> entities);
+
+        IGenericRepository<CommunityProgram> CommunityProgramRepository { get; }
+
     }
 }
