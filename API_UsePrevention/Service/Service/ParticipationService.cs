@@ -13,22 +13,17 @@ namespace Service.Service
 {
     public class ParticipationService : IParticipationService
     {
-        private readonly IGenericRepository<Participation> _participationRepository;
-        private readonly IGenericRepository<CommunityProgram> _communityProgramRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public ParticipationService(IGenericRepository<Participation> participationRepository,
-             IGenericRepository<CommunityProgram> communityProgramRepository, IUnitOfWork unitOfWork)
+        public ParticipationService(IUnitOfWork unitOfWork)
         {
-            _participationRepository = participationRepository;
-            _communityProgramRepository = communityProgramRepository;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<ParticipationDto> CreateOrUpdateParticipationAsync(int userId, ParticipationCreateUpdateDto dto)
         {
             // Lấy chương trình từ repository
-            var program = await _communityProgramRepository.GetByIdAsync(dto.ProgramId);
+            var program = await _unitOfWork.CommunityProgram.GetByIdAsync(dto.ProgramId);
 
             if (program == null)
                 return null;
@@ -36,9 +31,9 @@ namespace Service.Service
             var now = DateTime.UtcNow;
             if (now < program.StartDate || now > program.EndDate)
                 return null;
-
+            
             // Kiểm tra nếu người dùng đã tham gia
-            var existing = (await _participationRepository.FindAsync(p =>
+            var existing = (await _unitOfWork.Participation.FindAsync(p =>
                 p.UserId == userId && p.ProgramId == dto.ProgramId)).FirstOrDefault();
 
             if (existing != null)
@@ -47,7 +42,7 @@ namespace Service.Service
                 existing.PostSurvey = dto.PostSurvey;
                 existing.JoinedAt = dto.JoinedAt?.ToUniversalTime() ?? now;
 
-                await _participationRepository.UpdateAsync(existing);
+                await _unitOfWork.Participation.UpdateAsync(existing);
                 await _unitOfWork.CommitAsync();
 
                 return MapToDto(existing);
@@ -62,7 +57,7 @@ namespace Service.Service
                 JoinedAt = dto.JoinedAt?.ToUniversalTime() ?? now
             };
 
-            await _participationRepository.AddAsync(newParticipation);
+            await _unitOfWork.Participation.AddAsync(newParticipation);
             await _unitOfWork.CommitAsync();
 
             return MapToDto(newParticipation);
@@ -70,7 +65,7 @@ namespace Service.Service
 
         public async Task<IEnumerable<ParticipationDto>> GetUserParticipationsAsync(int userId)
         {
-            var participations = await _participationRepository.FindAsync(p => p.UserId == userId);
+            var participations = await _unitOfWork.Participation.FindAsync(p => p.UserId == userId);
             return participations.Select(MapToDto);
         }
 
@@ -86,7 +81,7 @@ namespace Service.Service
 
         public async Task<IEnumerable<ParticipationDto>> GetAllParticipationsAsync()
         {
-            var participations = await _participationRepository.GetAll();
+            var participations = await _unitOfWork.Participation.GetAll();
             return participations.Select(p => new ParticipationDto
             {
                 Id = p.Id,

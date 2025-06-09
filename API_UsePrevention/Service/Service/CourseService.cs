@@ -14,17 +14,16 @@ namespace Service.Service
 {
     public class CourseService :ICourseService
     {
-        private readonly IGenericRepository<Course> _courseRepository;
+        
         private readonly IUnitOfWork _unitOfWork;
-        public CourseService(IGenericRepository<Course> courseRepository, IUnitOfWork unitOfWork)
+        public CourseService( IUnitOfWork unitOfWork)
         {
-            _courseRepository = courseRepository;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<IEnumerable<CourseResponseDto>> GetAllAsync()
         {
-            var courses = await _courseRepository.GetAll();
+            var courses = await _unitOfWork.Course.GetAll();
             return courses.Select(c => new CourseResponseDto
             {
                 Id = c.Id,
@@ -38,7 +37,7 @@ namespace Service.Service
 
         public async Task<CourseResponseDto> GetByIdAsync(int id)
         {
-            var course = await _courseRepository.GetByIdAsync(id);
+            var course = await _unitOfWork.Course.GetByIdAsync(id);
             if (course == null)
             {
                 throw new KeyNotFoundException("Course not found");
@@ -65,7 +64,7 @@ namespace Service.Service
                 IsActive = request.IsActive ?? true
             };
 
-            await _courseRepository.AddAsync(course);
+            await _unitOfWork.Course.AddAsync(course);
             await _unitOfWork.CommitAsync();
 
             return new CourseResponseDto
@@ -81,7 +80,7 @@ namespace Service.Service
 
         public async Task<CourseResponseDto> UpdateAsync(int id, CourseRequestDto request)
         {
-            var course = await _courseRepository.GetByIdAsync(id);
+            var course = await _unitOfWork.Course.GetByIdAsync(id);
             if (course == null)
                 throw new KeyNotFoundException("Course not found");
 
@@ -90,7 +89,7 @@ namespace Service.Service
             course.TargetGroup = request.TargetGroup;
             course.IsActive = request.IsActive;
 
-            await _courseRepository.UpdateAsync(course);
+            await _unitOfWork.Course.UpdateAsync(course);
             await _unitOfWork.CommitAsync();
 
             return new CourseResponseDto
@@ -106,11 +105,11 @@ namespace Service.Service
 
         public async Task DeleteAsync(int id)
         {
-            var course = await _courseRepository.GetByIdAsync(id);
+            var course = await _unitOfWork.Course.GetByIdAsync(id);
             if (course == null)
                 throw new KeyNotFoundException("Course not found");
 
-            await _courseRepository.DeleteAsync(course);
+            await _unitOfWork.Course.DeleteAsync(course);
             await _unitOfWork.CommitAsync();
         }
     }

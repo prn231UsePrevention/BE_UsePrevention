@@ -34,6 +34,8 @@ public partial class DrugUsePreventionSupportSystemContext : DbContext
     public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<AssessmentAnswer> AssessmentAnswers { get; set; }
+    public virtual DbSet<AssessmentQuestion> AssessmentQuestions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

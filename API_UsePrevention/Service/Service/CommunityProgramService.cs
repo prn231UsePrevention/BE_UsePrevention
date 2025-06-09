@@ -13,26 +13,22 @@ namespace Service.Service
 {
     public class CommunityProgramService : ICommunityProgramService
     {
-        private readonly IGenericRepository<CommunityProgram> _repo;
-        private readonly DrugUsePreventionSupportSystemContext _context;
         private readonly IUnitOfWork _unitOfWork;
 
 
-        public CommunityProgramService(IGenericRepository<CommunityProgram> repo, DrugUsePreventionSupportSystemContext context, IUnitOfWork unitOfWork)
+        public CommunityProgramService(IUnitOfWork unitOfWork)
         {
-            _repo = repo;
-            _context = context;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<IEnumerable<CommunityProgram>> GetAllAsync()
         {
-            return await _repo.GetAll();
+            return await _unitOfWork.CommunityProgram.GetAll();
         }
 
         public async Task<CommunityProgram> GetByIdAsync(int id)
         {
-            return await _repo.GetByIdAsync(id);
+            return await _unitOfWork.CommunityProgram.GetByIdAsync(id);
         }
 
         public async Task<CommunityProgram> CreateAsync(CommunityProgramDto dto)
@@ -44,14 +40,14 @@ namespace Service.Service
                 StartDate = dto.StartDate,
                 EndDate = dto.EndDate
             };
-            await _repo.AddAsync(program);
+            await _unitOfWork.CommunityProgram.AddAsync(program);
             await _unitOfWork.CommitAsync();
             return program;
         }
 
         public async Task<bool> UpdateAsync(int id, CommunityProgramDto dto)
         {
-            var program = await _repo.GetByIdAsync(id);
+            var program = await _unitOfWork.CommunityProgram.GetByIdAsync(id);
             if (program == null) return false;
 
             program.Name = dto.Name;
@@ -59,7 +55,7 @@ namespace Service.Service
             program.StartDate = dto.StartDate;
             program.EndDate = dto.EndDate;
 
-            await _repo.UpdateAsync(program);
+            await _unitOfWork.CommunityProgram.UpdateAsync(program);
              await _unitOfWork.CommitAsync();
 
             return true;
@@ -67,11 +63,11 @@ namespace Service.Service
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var existing = await _repo.GetByIdAsync(id);
+            var existing = await _unitOfWork.CommunityProgram.GetByIdAsync(id);
             if (existing == null) return false;
 
-            await _repo.DeleteAsync(existing);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.CommunityProgram.DeleteAsync(existing);
+            await _unitOfWork.CommitAsync();
             return true;
         }
     }

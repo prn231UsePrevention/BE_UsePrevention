@@ -15,13 +15,11 @@ namespace Service.Service
 {
     public class UserService : IUserService
     {
-        private readonly IGenericRepository<User> _userRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IJwtService _jwtService;
 
-        public UserService(IGenericRepository<User> userRepository, IUnitOfWork unitOfWork, IJwtService jwtService)
+        public UserService(IUnitOfWork unitOfWork, IJwtService jwtService)
         {
-            _userRepository = userRepository;
             _unitOfWork = unitOfWork;
             _jwtService = jwtService;
         }
@@ -40,7 +38,7 @@ namespace Service.Service
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password)
             };
 
-            await _userRepository.AddAsync(user);
+            await _unitOfWork.User.AddAsync(user);
             await _unitOfWork.CommitAsync();
 
             return user;
@@ -49,38 +47,38 @@ namespace Service.Service
 
         public async Task<User> GetByIdAsync(int id)
         {
-            return await _userRepository.GetByIdAsync(id);
+            return await _unitOfWork.User.GetByIdAsync(id);
         }
 
         public async Task<IEnumerable<User>> GetAllAsync()
         {
-            return await _userRepository.GetAll();
+            return await _unitOfWork.User.GetAll();
         }
 
         public async Task<IEnumerable<User>> GetByRoleAsync(int role)
         {
-            return await _userRepository.FindAsync(u => u.RoleId == role);
+            return await _unitOfWork.User.FindAsync(u => u.RoleId == role);
         }
 
         public async Task UpdateAsync(User user)
         {
-            await _userRepository.UpdateAsync(user);
+            await _unitOfWork.User.UpdateAsync(user);
             await _unitOfWork.CommitAsync();
         }
 
         public async Task DeleteAsync(int id)
         {
-            var user = await _userRepository.GetByIdAsync(id);
+            var user = await _unitOfWork.User.GetByIdAsync(id);
             if (user != null)
             {
-                await _userRepository.DeleteAsync(user);
+                await _unitOfWork.User.DeleteAsync(user);
                 await _unitOfWork.CommitAsync();
             }
         }
 
         public async Task<LoginResponseDto> LoginAsync(LoginRequest dto)
         {
-            var user = await _userRepository.Query()
+            var user = await _unitOfWork.User.Query()
                 .Include(u => u.Role)  
                 .FirstOrDefaultAsync(u => u.Email == dto.Email);
 
@@ -98,9 +96,9 @@ namespace Service.Service
 
         public async Task ChangePasswordAsync(int userId, string newPassword)
         {
-            var user = await _userRepository.GetByIdAsync(userId);
+            var user = await _unitOfWork.User.GetByIdAsync(userId);
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
-            await _userRepository.UpdateAsync(user);
+            await _unitOfWork.User.UpdateAsync(user);
             await _unitOfWork.CommitAsync();
         }
     }
