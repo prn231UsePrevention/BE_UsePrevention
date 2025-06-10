@@ -10,7 +10,6 @@
     <Folder Include="enum\" />
     <Folder Include="configguration\" />
     <Folder Include="constants\" />
-    <Folder Include="helper\" />
   </ItemGroup>
 
 </Project>
