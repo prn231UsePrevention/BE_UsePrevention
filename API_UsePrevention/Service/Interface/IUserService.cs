@@ -19,5 +19,7 @@ namespace Service.Interface
         Task DeleteAsync(int id);
         Task<LoginResponseDto> LoginAsync(LoginRequest dto);
         Task ChangePasswordAsync(int userId, string newPassword);
+
+        Task ForgotPasswordAsync(string email);
     }
 }
