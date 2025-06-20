@@ -17,11 +17,12 @@ namespace Service.Service
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IJwtService _jwtService;
-
-        public UserService(IUnitOfWork unitOfWork, IJwtService jwtService)
+        private readonly IEmailService _emailService;
+        public UserService(IUnitOfWork unitOfWork, IJwtService jwtService, IEmailService emailService)
         {
             _unitOfWork = unitOfWork;
             _jwtService = jwtService;
+            _emailService = emailService;
         }
 
         public async Task<User> RegisterAsync(RegisterUserDto dto)
@@ -100,6 +101,32 @@ namespace Service.Service
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
             await _unitOfWork.User.UpdateAsync(user);
             await _unitOfWork.CommitAsync();
+        }
+
+        public async Task ForgotPasswordAsync(string email)
+        {
+            var user = (await _unitOfWork.User.FindAsync(u => u.Email == email)).FirstOrDefault();
+            if (user == null)
+                throw new Exception("Email không tồn tại trong hệ thống.");
+
+            var newPassword = GenerateRandomPassword();
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+
+            await _unitOfWork.User.UpdateAsync(user);
+            await _unitOfWork.CommitAsync();
+
+            var subject = "Khôi phục mật khẩu - Hệ thống phòng chống ma túy";
+            var body = $"<p>Mật khẩu mới của bạn là: <strong>{newPassword}</strong></p>";
+
+            await _emailService.SendEmailAsync(email, subject, body);
+        }
+
+        private string GenerateRandomPassword()
+        {
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var random = new Random();
+            return new string(Enumerable.Repeat(chars, 8)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
         }
     }
 }

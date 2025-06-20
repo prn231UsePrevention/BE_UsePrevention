@@ -90,5 +90,20 @@ namespace API_UsePrevention.Controllers
             await _userService.ChangePasswordAsync(id, request.NewPassword);
             return NoContent();
         }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] string email)
+        {
+            try
+            {
+                await _userService.ForgotPasswordAsync(email);
+                return Ok("Mật khẩu mới đã được gửi đến email của bạn.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
     }
 }
