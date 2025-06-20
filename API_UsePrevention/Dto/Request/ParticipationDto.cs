@@ -22,6 +22,5 @@ namespace Dto.Request
         public int ProgramId { get; set; }
         public string PreSurvey { get; set; }
         public string PostSurvey { get; set; }
-        public DateTime? JoinedAt { get; set; }
     }
 }
