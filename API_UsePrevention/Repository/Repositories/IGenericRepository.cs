@@ -19,7 +19,5 @@ namespace Repository.Repositories
         Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
         Task AddRangeAsync(IEnumerable<T> entities);
 
-        IGenericRepository<CommunityProgram> CommunityProgramRepository { get; }
-
     }
 }

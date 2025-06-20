@@ -31,8 +31,7 @@ builder.Services.AddJwtAuthentication(builder.Configuration);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-
-
+builder.Services.AddAutoMapper(typeof(Service.Mappings.ParticipationProfile).Assembly);
 builder.Services.AddSwaggerWithJwt();
 
 var app = builder.Build();

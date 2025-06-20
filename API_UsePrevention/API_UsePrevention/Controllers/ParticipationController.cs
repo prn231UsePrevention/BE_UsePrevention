@@ -41,6 +41,9 @@ namespace API_UsePrevention.Controllers
         [Authorize(Roles = "Admin")] 
         public async Task<IActionResult> GetAll()
         {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdClaim, out int userId))
+                return Unauthorized("Không xác định được người dùng.");
             var result = await _service.GetAllParticipationsAsync();
             return Ok(result);
         }

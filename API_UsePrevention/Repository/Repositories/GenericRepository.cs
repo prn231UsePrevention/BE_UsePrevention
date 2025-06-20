@@ -62,8 +62,5 @@ namespace Repository.Repositories
             return _dbSet.AsQueryable();
         }
 
-        public IGenericRepository<CommunityProgram> CommunityProgramRepository
-    => _communityProgramRepository ??= new GenericRepository<CommunityProgram>(_context);
-        private IGenericRepository<CommunityProgram> _communityProgramRepository;
     }
 }

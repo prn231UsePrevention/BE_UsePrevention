@@ -29,7 +29,9 @@ namespace Service.Service
                    new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                    new Claim(ClaimTypes.Name, user.FullName),
                    new Claim(ClaimTypes.Email, user.Email),
-                   new Claim(ClaimTypes.Role, user.Role.Name) 
+                   new Claim(ClaimTypes.Role, user.Role.Name),
+                   new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+
                };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
