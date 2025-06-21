@@ -11,7 +11,7 @@ namespace Service.Interface
 {
     public interface IUserService
     {
-        Task<User> RegisterAsync(RegisterUserDto user);
+        Task<User> RegisterAsync(RegisterUserDto dto, bool isCustomer = true);
         Task<User> GetByIdAsync(int id);
         Task<IEnumerable<User>> GetAllAsync();
         Task<IEnumerable<User>> GetByRoleAsync(int role);
@@ -19,7 +19,7 @@ namespace Service.Interface
         Task DeleteAsync(int id);
         Task<LoginResponseDto> LoginAsync(LoginRequest dto);
         Task ChangePasswordAsync(int userId, string newPassword);
-
+        Task<Role> CreateRoleAsync(CreateRoleRequest role);
         Task ForgotPasswordAsync(string email);
     }
 }
