@@ -14,6 +14,9 @@ namespace Service.Interface
         Task<FeedbackDto?> GetByIdAsync(int id);
         Task<FeedbackDto> CreateAsync(CreateFeedbackDto dto);
         Task<bool> DeleteAsync(int id);
+
+        Task<FeedbackDto?> UpdateAsync(int id, UpdateFeedbackDto dto);
+
     }
 
 }

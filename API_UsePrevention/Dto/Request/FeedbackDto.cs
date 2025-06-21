@@ -29,4 +29,10 @@ namespace Dto.Request
         public string? AssessmentSummary { get; set; }
     }
 
+    public class UpdateFeedbackDto
+    {
+        public int Rating { get; set; }
+        public string? Comment { get; set; }
+        public string? AssessmentSummary { get; set; }
+    }
 }

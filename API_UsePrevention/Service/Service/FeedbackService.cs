@@ -51,5 +51,19 @@ namespace Service.Service
             await _unitOfWork.CommitAsync();
             return true;
         }
+
+        public async Task<FeedbackDto?> UpdateAsync(int id, UpdateFeedbackDto dto)
+        {
+            var feedback = await _unitOfWork.Feedback.GetByIdAsync(id);
+            if (feedback == null)
+                return null;
+
+            _mapper.Map(dto, feedback); // map dữ liệu mới vào đối tượng feedback cũ
+            await _unitOfWork.Feedback.UpdateAsync(feedback);
+            await _unitOfWork.CommitAsync();
+
+            return _mapper.Map<FeedbackDto>(feedback);
+        }
+
     }
 }

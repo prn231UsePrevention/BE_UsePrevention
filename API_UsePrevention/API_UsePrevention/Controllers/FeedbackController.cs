@@ -44,5 +44,16 @@ namespace API_UsePrevention.Controllers
             return result ? NoContent() : NotFound();
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateFeedbackDto dto)
+        {
+            var updated = await _feedbackService.UpdateAsync(id, dto);
+            if (updated == null)
+                return NotFound(new { message = "Feedback not found" });
+
+            return Ok(updated);
+        }
+
+
     }
 }

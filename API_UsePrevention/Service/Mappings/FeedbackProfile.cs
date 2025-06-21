@@ -15,6 +15,9 @@ namespace Service.Mappings
         {
             CreateMap<Feedback, FeedbackDto>();
             CreateMap<CreateFeedbackDto, Feedback>();
+            CreateMap<UpdateFeedbackDto, Feedback>()
+    .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
         }
     }
 }
