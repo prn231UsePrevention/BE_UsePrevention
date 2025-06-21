@@ -37,6 +37,9 @@ public partial class DrugUsePreventionSupportSystemContext : DbContext
     public virtual DbSet<AssessmentAnswer> AssessmentAnswers { get; set; }
     public virtual DbSet<AssessmentQuestion> AssessmentQuestions { get; set; }
 
+    public virtual DbSet<Feedback> Feedbacks { get; set; }
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Appointment>(entity =>
@@ -223,6 +226,39 @@ public partial class DrugUsePreventionSupportSystemContext : DbContext
                 .HasForeignKey(d => d.RoleId)
                 .HasConstraintName("FK_Users_Roles");
         });
+
+        modelBuilder.Entity<Feedback>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Comment).HasColumnType("nvarchar(max)");
+            entity.Property(e => e.AssessmentSummary).HasColumnType("nvarchar(max)");
+            entity.Property(e => e.Rating).IsRequired();
+            entity.Property(e => e.CreatedAt)
+                  .HasColumnType("datetime")
+                  .HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(d => d.Appointment)
+                  .WithMany(p => p.Feedbacks)
+                  .HasForeignKey(d => d.AppointmentId)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_Feedbacks_Appointments");
+
+            entity.HasOne(d => d.Consultant)
+                  .WithMany(p => p.Feedbacks)
+                  .HasForeignKey(d => d.ConsultantId)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_Feedbacks_Consultants");
+
+            entity.HasOne(d => d.User)
+                  .WithMany(p => p.Feedbacks)
+                  .HasForeignKey(d => d.UserId)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_Feedbacks_Users");
+
+            entity.HasCheckConstraint("CK_Feedbacks_Rating", "[Rating] BETWEEN 1 AND 5");
+        });
+
 
         OnModelCreatingPartial(modelBuilder);
     }

@@ -23,6 +23,8 @@ namespace Repository.UWO
         IGenericRepository<Appointment> Appointment { get; }
         IGenericRepository<AssessmentQuestion> AssessmentQuestion { get; }
         IGenericRepository<AssessmentAnswer> AssessmentAnswer { get; }
+
+        IGenericRepository<Feedback> Feedback { get; }
         Task<int> CommitAsync();
     }
 }

@@ -41,6 +41,7 @@ namespace Repository.UWO
 
         public IGenericRepository<AssessmentAnswer> AssessmentAnswer { get; }
 
+        public IGenericRepository<Feedback> Feedback { get; }
         public UnitOfWork(DrugUsePreventionSupportSystemContext context)
         {
             _context = context;
@@ -57,6 +58,7 @@ namespace Repository.UWO
             Appointment = new GenericRepository<Appointment>(_context);
             AssessmentQuestion = new GenericRepository<AssessmentQuestion>(_context);
             AssessmentAnswer = new GenericRepository<AssessmentAnswer>(_context);
+            Feedback = new GenericRepository<Feedback>(_context);
         }
 
         public async Task<int> CommitAsync()
