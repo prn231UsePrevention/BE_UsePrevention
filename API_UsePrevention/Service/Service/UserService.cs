@@ -25,13 +25,15 @@ namespace Service.Service
             _emailService = emailService;
         }
 
-        public async Task<User> RegisterAsync(RegisterUserDto dto)
+        public async Task<User> RegisterAsync(RegisterUserDto dto, bool isCustomer = true)
         {
+            int roleId = isCustomer ? 1 : dto.RoleId ?? throw new Exception("RoleId is required for non-customer registration.");
+
             var user = new User
             {
                 FullName = dto.FullName,
                 Email = dto.Email,
-                RoleId = 2,
+                RoleId = roleId,
                 DateOfBirth = dto.DateOfBirth,
                 Gender = dto.Gender,
                 CreatedAt = DateTime.UtcNow,
@@ -44,6 +46,7 @@ namespace Service.Service
 
             return user;
         }
+
 
 
         public async Task<User> GetByIdAsync(int id)
@@ -93,6 +96,19 @@ namespace Service.Service
                 Token = token,
             };
         }
+
+        public async Task<Role> CreateRoleAsync(CreateRoleRequest request)
+        {
+            var role = new Role
+            {
+                Name = request.Name
+            };
+
+            await _unitOfWork.Role.AddAsync(role);
+            await _unitOfWork.CommitAsync();
+            return role;
+        }
+
 
 
         public async Task ChangePasswordAsync(int userId, string newPassword)

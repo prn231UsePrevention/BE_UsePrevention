@@ -1,9 +1,11 @@
 ﻿using Dto.Request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Repository.Models;
 using Service.Interface;
+using System.Security.Claims;
 
 namespace API_UsePrevention.Controllers
 {
@@ -18,15 +20,48 @@ namespace API_UsePrevention.Controllers
             _userService = userService;
         }
 
+        [HttpPost("create-role")]
+        public async Task<IActionResult> CreateRole([FromBody] CreateRoleRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Name))
+                return BadRequest(new { message = "Role name is required." });
+
+            var role = await _userService.CreateRoleAsync(request);
+            return Ok(new
+            {
+                message = "Role created successfully.",
+                data = new
+                {
+                    role.Id,
+                    role.Name
+                }
+            });
+        }
+
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterUserDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var user = await _userService.RegisterAsync(dto);
-            return Ok(user); 
+            var user = await _userService.RegisterAsync(dto, isCustomer: true);
+            return Ok(user);
         }
+
+
+        [HttpPost("register-staff")]
+        public async Task<IActionResult> RegisterStaff([FromBody] RegisterUserDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!dto.RoleId.HasValue)
+                return BadRequest(new { message = "RoleId is required for staff registration." });
+
+            var user = await _userService.RegisterAsync(dto, isCustomer: false);
+            return Ok(user);
+        }
+
 
 
         [HttpPost("login")]
@@ -84,11 +119,17 @@ namespace API_UsePrevention.Controllers
             return NoContent();
         }
 
-        [HttpPost("{id}/change-password")]
-        public async Task<IActionResult> ChangePassword(int id, [FromBody] ChangePasswordRequest request)
+        [Authorize]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {
-            await _userService.ChangePasswordAsync(id, request.NewPassword);
-            return NoContent();
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+                return Unauthorized(new { message = "Invalid token." });
+            int userId = int.Parse(userIdClaim.Value);
+
+            await _userService.ChangePasswordAsync(userId, request.NewPassword);
+            return Ok(new { message = "Password changed successfully." });
         }
 
         [HttpPost("forgot-password")]
