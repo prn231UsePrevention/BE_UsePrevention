@@ -20,4 +20,7 @@ public partial class Consultant
     public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 
     public virtual User User { get; set; }
+
+    public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
+
 }

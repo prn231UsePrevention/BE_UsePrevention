@@ -22,4 +22,7 @@ public partial class Appointment
     public virtual Consultant Consultant { get; set; }
 
     public virtual User User { get; set; }
+
+    public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
+
 }

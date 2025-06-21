@@ -40,4 +40,8 @@ public partial class User
     public virtual ICollection<Participation> Participations { get; set; } = new List<Participation>();
     [JsonIgnore]
     public virtual Role Role { get; set; }
+
+    [JsonIgnore]
+    public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
+
 }
