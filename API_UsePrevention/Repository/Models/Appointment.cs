@@ -9,7 +9,7 @@ public partial class Appointment
 {
     public int Id { get; set; }
 
-    public int UserId { get; set; }
+    public int? UserId { get; set; }
 
     public int ConsultantId { get; set; }
 

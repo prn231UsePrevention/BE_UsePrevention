@@ -16,6 +16,7 @@ namespace API_UsePrevention.Extensions
             services.AddScoped<ICourseService, CourseService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IFeedbackService, FeedbackService>();
+            services.AddScoped<IAppointmentService, AppointmentService>();
             return services;
         }
     }
