@@ -13,11 +13,12 @@ namespace Service.Interface
     {
         Task<IEnumerable<ConsultantResponseDto>> GetConsultantsAsync();
         Task<IEnumerable<AvailableSlotResponseDto>> GetAvailableSlotsAsync(GetAvailableSlotsRequestDto request);
-        Task<AppointmentResponseDto> CreateAppointmentAsync(int userId, CreateAppointmentRequestDto request);
+        Task<AppointmentResponseDto> BookSlotAsync(int userId, BookSlotRequestDto request);
         Task<IEnumerable<AppointmentResponseDto>> GetUserAppointmentsAsync(int userId);
         Task<IEnumerable<AppointmentResponseDto>> GetConsultantAppointmentsAsync(int consultantId);
         Task UpdateAppointmentStatusAsync(int appointmentId, UpdateAppointmentStatusRequestDto request);
         Task CancelAppointmentAsync(int appointmentId, int userId, string userRole);
         Task<AppointmentResponseDto> GetAppointmentByIdAsync(int appointmentId);
+        Task CreateSlotAsync(int userId, CreateSlotRequestDto request);
     }
 }
