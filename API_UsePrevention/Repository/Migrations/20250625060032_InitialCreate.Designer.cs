@@ -12,8 +12,8 @@ using Repository.Models;
 namespace Repository.Migrations
 {
     [DbContext(typeof(DrugUsePreventionSupportSystemContext))]
-    [Migration("20250609115737_AddAssessmentAnswerAndQuestion")]
-    partial class AddAssessmentAnswerAndQuestion
+    [Migration("20250625060032_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -347,6 +347,51 @@ namespace Repository.Migrations
                     b.ToTable("Enrollments");
                 });
 
+            modelBuilder.Entity("Repository.Models.Feedback", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AppointmentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AssessmentSummary")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ConsultantId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId");
+
+                    b.HasIndex("ConsultantId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Feedbacks", t =>
+                        {
+                            t.HasCheckConstraint("CK_Feedbacks_Rating", "[Rating] BETWEEN 1 AND 5");
+                        });
+                });
+
             modelBuilder.Entity("Repository.Models.Participation", b =>
                 {
                     b.Property<int>("Id")
@@ -567,6 +612,33 @@ namespace Repository.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Repository.Models.Feedback", b =>
+                {
+                    b.HasOne("Repository.Models.Appointment", "Appointment")
+                        .WithMany("Feedbacks")
+                        .HasForeignKey("AppointmentId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Feedbacks_Appointments");
+
+                    b.HasOne("Repository.Models.Consultant", "Consultant")
+                        .WithMany("Feedbacks")
+                        .HasForeignKey("ConsultantId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Feedbacks_Consultants");
+
+                    b.HasOne("Repository.Models.User", "User")
+                        .WithMany("Feedbacks")
+                        .HasForeignKey("UserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Feedbacks_Users");
+
+                    b.Navigation("Appointment");
+
+                    b.Navigation("Consultant");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Repository.Models.Participation", b =>
                 {
                     b.HasOne("Repository.Models.CommunityProgram", "Program")
@@ -596,6 +668,11 @@ namespace Repository.Migrations
                     b.Navigation("Role");
                 });
 
+            modelBuilder.Entity("Repository.Models.Appointment", b =>
+                {
+                    b.Navigation("Feedbacks");
+                });
+
             modelBuilder.Entity("Repository.Models.Assessment", b =>
                 {
                     b.Navigation("AssessmentResults");
@@ -614,6 +691,8 @@ namespace Repository.Migrations
             modelBuilder.Entity("Repository.Models.Consultant", b =>
                 {
                     b.Navigation("Appointments");
+
+                    b.Navigation("Feedbacks");
                 });
 
             modelBuilder.Entity("Repository.Models.Course", b =>
@@ -637,6 +716,8 @@ namespace Repository.Migrations
                     b.Navigation("Consultant");
 
                     b.Navigation("Enrollments");
+
+                    b.Navigation("Feedbacks");
 
                     b.Navigation("Participations");
                 });

@@ -18,5 +18,6 @@ namespace Service.Interface
         Task<Assessment> CreateAssessmentAsync(AssessmentCreateDto dto);
         Task<bool> UpdateAssessmentAsync(int id, AssessmentUpdateDto dto);
         Task<bool> DeleteAssessmentAsync(int id);
+        Task<bool> DeleteAssessmentResultAsync(int resultId);
     }
 }

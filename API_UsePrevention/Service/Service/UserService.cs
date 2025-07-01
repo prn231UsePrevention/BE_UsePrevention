@@ -94,6 +94,8 @@ namespace Service.Service
             return new LoginResponseDto
             {
                 Token = token,
+                UserId = user.Id,
+                Role = user.Role.Name
             };
         }
 

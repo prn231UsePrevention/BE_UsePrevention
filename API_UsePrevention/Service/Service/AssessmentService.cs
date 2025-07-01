@@ -64,6 +64,8 @@ namespace Service.Service
 
         public async Task<AssessmentResult> SubmitAssessmentAsync(int userId, int assessmentId, List<AnswerDto> answers)
         {
+            
+
             var questionIds = answers.Select(a => a.QuestionId).ToList();
             var questions = await _unitOfWork.AssessmentQuestion.FindAsync(q =>
                 q.AssessmentId == assessmentId && questionIds.Contains(q.Id));
@@ -121,6 +123,23 @@ namespace Service.Service
 
             assessment.Name = dto.Name;
             assessment.Description = dto.Description;
+            await _unitOfWork.CommitAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteAssessmentResultAsync(int resultId)
+        {
+            var result = await _unitOfWork.AssessmentResult.GetByIdAsync(resultId);
+            if (result == null) return false;
+
+            // Optionally, delete associated answers if they are not cascaded
+            // var answers = await _unitOfWork.AssessmentAnswer.FindAsync(a => a.AssessmentResultId == resultId);
+            // foreach (var answer in answers)
+            // {
+            //     _unitOfWork.AssessmentAnswer.DeleteAsync(answer);
+            // }
+
+            _unitOfWork.AssessmentResult.DeleteAsync(result);
             await _unitOfWork.CommitAsync();
             return true;
         }

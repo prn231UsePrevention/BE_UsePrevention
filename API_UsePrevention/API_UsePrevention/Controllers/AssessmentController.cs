@@ -7,7 +7,7 @@ namespace API_UsePrevention.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize] 
+    [Authorize]
     public class AssessmentController : ControllerBase
     {
         private readonly IAssessmentService _assessmentService;
@@ -19,7 +19,6 @@ namespace API_UsePrevention.Controllers
 
 
         [HttpGet]
-        [Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> GetAll()
         {
             var list = await _assessmentService.GetAllAssessmentsAsync();
@@ -38,7 +37,7 @@ namespace API_UsePrevention.Controllers
 
 
         [HttpPost]
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] AssessmentCreateDto dto)
         {
             if (!ModelState.IsValid)
@@ -50,7 +49,7 @@ namespace API_UsePrevention.Controllers
 
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, [FromBody] AssessmentUpdateDto dto)
         {
             if (!ModelState.IsValid)
@@ -64,7 +63,7 @@ namespace API_UsePrevention.Controllers
 
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var success = await _assessmentService.DeleteAssessmentAsync(id);
@@ -75,7 +74,6 @@ namespace API_UsePrevention.Controllers
 
 
         [HttpPost("submit")]
-        [Authorize(Roles = "USER,ADMIN")]
         public async Task<IActionResult> Submit([FromBody] AssessmentSubmitDto dto)
         {
             if (!ModelState.IsValid)
@@ -83,11 +81,15 @@ namespace API_UsePrevention.Controllers
 
             
             var result = await _assessmentService.SubmitAssessmentAsync(dto.UserId, dto.AssessmentId, dto.Answers);
-            return Ok(result);
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            return BadRequest("Assessment already submitted or an error occurred.");
         }
 
         [HttpGet("results/user/{userId}")]
-        [Authorize(Roles = "USER,ADMIN")]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> GetResultsByUser(int userId)
         {
             var results = await _assessmentService.GetUserAssessmentResultsAsync(userId);
@@ -96,13 +98,22 @@ namespace API_UsePrevention.Controllers
 
 
         [HttpGet("result/{resultId}")]
-        [Authorize(Roles = "USER,ADMIN")]
         public async Task<IActionResult> GetResultById(int resultId)
         {
             var result = await _assessmentService.GetAssessmentResultByIdAsync(resultId);
             if (result == null)
                 return NotFound();
             return Ok(result);
+        }
+
+        [HttpDelete("result/{resultId}")]
+        [Authorize(Roles = "User,Admin")] // Allow users to delete their own results
+        public async Task<IActionResult> DeleteResult(int resultId)
+        {
+            var success = await _assessmentService.DeleteAssessmentResultAsync(resultId);
+            if (!success)
+                return NotFound();
+            return Ok(new { message = "Assessment result deleted successfully" });
         }
     }
 }

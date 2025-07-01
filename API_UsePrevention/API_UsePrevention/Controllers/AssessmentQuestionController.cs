@@ -7,7 +7,7 @@ namespace API_UsePrevention.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize] 
+    [Authorize]
     public class AssessmentQuestionController : ControllerBase
     {
         private readonly IAssessmentQuestionService _service;
@@ -44,7 +44,7 @@ namespace API_UsePrevention.Controllers
 
    
         [HttpPost]
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] AssessmentQuestionCreateDto dto)
         {
             if (!ModelState.IsValid)
@@ -56,7 +56,7 @@ namespace API_UsePrevention.Controllers
 
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, [FromBody] AssessmentQuestionUpdateDto dto)
         {
             if (!ModelState.IsValid)
@@ -68,7 +68,7 @@ namespace API_UsePrevention.Controllers
 
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             await _service.DeleteAsync(id);
