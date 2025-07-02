@@ -120,6 +120,9 @@ public partial class DrugUsePreventionSupportSystemContext : DbContext
                 .IsRequired()
                 .HasMaxLength(200);
             entity.Property(e => e.StartDate).HasColumnType("datetime");
+            entity.Property(e => e.ImgUrl)
+    .HasColumnName("ImgUrl")
+    .HasColumnType("nvarchar(max)");
         });
 
         modelBuilder.Entity<Consultant>(entity =>
