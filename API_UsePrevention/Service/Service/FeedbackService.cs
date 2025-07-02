@@ -34,9 +34,11 @@ namespace Service.Service
             return feedback == null ? null : _mapper.Map<FeedbackDto>(feedback);
         }
 
-        public async Task<FeedbackDto> CreateAsync(CreateFeedbackDto dto)
+        public async Task<FeedbackDto> CreateAsync(CreateFeedbackDto dto, int userId)
         {
             var feedback = _mapper.Map<Feedback>(dto);
+            feedback.UserId = userId;
+            feedback.CreatedAt = DateTime.Now;
             await _unitOfWork.Feedback.AddAsync(feedback);
             await _unitOfWork.CommitAsync();
             return _mapper.Map<FeedbackDto>(feedback);
@@ -52,10 +54,11 @@ namespace Service.Service
             return true;
         }
 
-        public async Task<FeedbackDto?> UpdateAsync(int id, UpdateFeedbackDto dto)
+        public async Task<FeedbackDto?> UpdateAsync(int id, UpdateFeedbackDto dto, int userId)
         {
+
             var feedback = await _unitOfWork.Feedback.GetByIdAsync(id);
-            if (feedback == null)
+            if (feedback == null || feedback.UserId != userId)
                 return null;
 
             _mapper.Map(dto, feedback); // map dữ liệu mới vào đối tượng feedback cũ

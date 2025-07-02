@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Repository.Models;
 using Service.Interface;
+using System.Security.Claims;
 
 namespace API_UsePrevention.Controllers
 {
@@ -33,7 +34,8 @@ namespace API_UsePrevention.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateFeedbackDto dto)
         {
-            var created = await _feedbackService.CreateAsync(dto);
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var created = await _feedbackService.CreateAsync(dto, userId);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
@@ -47,7 +49,8 @@ namespace API_UsePrevention.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateFeedbackDto dto)
         {
-            var updated = await _feedbackService.UpdateAsync(id, dto);
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var updated = await _feedbackService.UpdateAsync(id, dto, userId);
             if (updated == null)
                 return NotFound(new { message = "Feedback not found" });
 
