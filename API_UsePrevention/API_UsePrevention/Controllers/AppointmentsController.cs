@@ -4,6 +4,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Repository.UWO;
 using Service.Interface;
+using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace API_UsePrevention.Controllers
 {
@@ -34,12 +40,21 @@ namespace API_UsePrevention.Controllers
             }
         }
 
+        // SỬA LỖI 1: Thay đổi chữ ký của Action này
+        // Thay vì nhận một đối tượng phức tạp [FromQuery], chúng ta nhận các tham số đơn giản.
+        // Điều này cho phép `CreatedAtAction` trong phương thức `CreateSlot` có thể tìm thấy route này một cách chính xác.
         [HttpGet("available-slots")]
-        public async Task<ActionResult<IEnumerable<AvailableSlotResponseDto>>> GetAvailableSlots([FromQuery] GetAvailableSlotsRequestDto request)
+        public async Task<ActionResult<IEnumerable<AvailableSlotResponseDto>>> GetAvailableSlots([FromQuery] int consultantId, [FromQuery] DateTime date)
         {
             try
             {
-                var slots = await _appointmentService.GetAvailableSlotsAsync(request);
+                // Tạo lại đối tượng DTO để truyền vào service
+                var requestDto = new GetAvailableSlotsRequestDto
+                {
+                    ConsultantId = consultantId,
+                    Date = date
+                };
+                var slots = await _appointmentService.GetAvailableSlotsAsync(requestDto);
                 return Ok(slots);
             }
             catch (KeyNotFoundException ex)
@@ -58,13 +73,25 @@ namespace API_UsePrevention.Controllers
         {
             try
             {
-                var userId = int.Parse(User.FindFirst("sub")?.Value);
-                var isConsultant = (await _unitOfWork.Consultant.GetByIdAsync(userId)) != null;
-                if (isConsultant)
-                    return Unauthorized("Consultants cannot book slots");
+                var emailClaim = User.FindFirst(ClaimTypes.Email)?.Value;
+                if (string.IsNullOrEmpty(emailClaim))
+                    return Unauthorized("Email claim is missing in the JWT token");
+
+                var users = _unitOfWork.User.Find(u => u.Email == emailClaim);
+                var user = users.FirstOrDefault();
+                if (user == null)
+                    return Unauthorized("User not found");
+
+                var userId = user.Id;
+                if (user.RoleId == 5) // Consultant không được đặt lịch
+                    return Unauthorized("Consultants (RoleId = 5) cannot book slots");
 
                 var appointment = await _appointmentService.BookSlotAsync(userId, request);
-                return CreatedAtAction(nameof(GetAppointment), new { id = appointment.Id }, appointment);
+
+                // SỬA LỖI 2: Sửa tên tham số route
+                // Tên tham số trong route values (`appointmentId`) phải khớp chính xác với tên tham số trong phương thức `GetAppointment` (`int appointmentId`).
+                // Trước đó là `id`, giờ đã sửa thành `appointmentId`.
+                return CreatedAtAction(nameof(GetAppointment), new { appointmentId = appointment.Id }, appointment);
             }
             catch (KeyNotFoundException ex)
             {
@@ -86,7 +113,16 @@ namespace API_UsePrevention.Controllers
         {
             try
             {
-                var userId = int.Parse(User.FindFirst("sub")?.Value);
+                var emailClaim = User.FindFirst(ClaimTypes.Email)?.Value;
+                if (string.IsNullOrEmpty(emailClaim))
+                    return Unauthorized("Email claim is missing in the JWT token");
+
+                var users = _unitOfWork.User.Find(u => u.Email == emailClaim);
+                var user = users.FirstOrDefault();
+                if (user == null)
+                    return Unauthorized("User not found");
+
+                var userId = user.Id;
                 var appointments = await _appointmentService.GetUserAppointmentsAsync(userId);
                 return Ok(appointments);
             }
@@ -102,8 +138,17 @@ namespace API_UsePrevention.Controllers
         {
             try
             {
-                var userId = int.Parse(User.FindFirst("sub")?.Value);
-                var isConsultant = (await _unitOfWork.Consultant.GetByIdAsync(userId)) != null;
+                var emailClaim = User.FindFirst(ClaimTypes.Email)?.Value;
+                if (string.IsNullOrEmpty(emailClaim))
+                    return Unauthorized("Email claim is missing in the JWT token");
+
+                var users = _unitOfWork.User.Find(u => u.Email == emailClaim);
+                var user = users.FirstOrDefault();
+                if (user == null)
+                    return Unauthorized("User not found");
+
+                var userId = user.Id;
+                var isConsultant = (await _unitOfWork.Consultant.FindAsync(c => c.UserId == userId)).Any();
                 if (!isConsultant && userId != consultantId)
                     return Unauthorized("Not authorized to view consultant appointments");
 
@@ -122,10 +167,14 @@ namespace API_UsePrevention.Controllers
         {
             try
             {
-                var userId = int.Parse(User.FindFirst("sub")?.Value);
-                var isConsultant = (await _unitOfWork.Consultant.GetByIdAsync(userId)) != null;
-                if (!isConsultant)
-                    return Unauthorized("Only consultants can update appointment status");
+                var emailClaim = User.FindFirst(ClaimTypes.Email)?.Value;
+                if (string.IsNullOrEmpty(emailClaim))
+                    return Unauthorized("Email claim is missing in the JWT token");
+
+                var users = _unitOfWork.User.Find(u => u.Email == emailClaim);
+                var user = users.FirstOrDefault();
+                if (user == null || user.RoleId != 5) // Chỉ Consultant (RoleId = 5) được cập nhật trạng thái
+                    return Unauthorized("Only consultants (RoleId = 5) can update appointment status");
 
                 await _appointmentService.UpdateAppointmentStatusAsync(appointmentId, request);
                 return NoContent();
@@ -150,9 +199,17 @@ namespace API_UsePrevention.Controllers
         {
             try
             {
-                var userId = int.Parse(User.FindFirst("sub")?.Value);
-                var userRole = (await _unitOfWork.Consultant.GetByIdAsync(userId)) != null ? "Consultant" : "Member";
-                await _appointmentService.CancelAppointmentAsync(appointmentId, userId, userRole);
+                var emailClaim = User.FindFirst(ClaimTypes.Email)?.Value;
+                if (string.IsNullOrEmpty(emailClaim))
+                    return Unauthorized("Email claim is missing in the JWT token");
+
+                var users = _unitOfWork.User.Find(u => u.Email == emailClaim);
+                var user = users.FirstOrDefault();
+                if (user == null)
+                    return Unauthorized("User not found");
+
+                var userRole = user.RoleId == 5 ? "Consultant" : "Member";
+                await _appointmentService.CancelAppointmentAsync(appointmentId, user.Id, userRole);
                 return NoContent();
             }
             catch (KeyNotFoundException ex)
@@ -180,6 +237,11 @@ namespace API_UsePrevention.Controllers
             try
             {
                 var appointment = await _appointmentService.GetAppointmentByIdAsync(appointmentId);
+                // Bạn nên kiểm tra appointment có null không trước khi trả về
+                if (appointment == null)
+                {
+                    return NotFound($"Appointment with ID {appointmentId} not found.");
+                }
                 return Ok(appointment);
             }
             catch (KeyNotFoundException ex)
@@ -196,32 +258,28 @@ namespace API_UsePrevention.Controllers
         [Authorize]
         public async Task<ActionResult> CreateSlot([FromBody] CreateSlotRequestDto request)
         {
-            try
-            {
-                var userId = int.Parse(User.FindFirst("sub")?.Value);
-                var consultant = await _unitOfWork.Consultant.FindAsync(c => c.UserId == userId);
-                if (!consultant.Any())
-                    return Unauthorized("Only consultants can create slots");
+            var emailClaim = User.FindFirst(ClaimTypes.Email)?.Value;
+            if (string.IsNullOrEmpty(emailClaim))
+                return Unauthorized("Email claim is missing in the JWT token");
 
-                await _appointmentService.CreateSlotAsync(userId, request);
-                return CreatedAtAction(nameof(GetAvailableSlots), new { consultantId = consultant.First().Id, date = request.StartTime.Date }, null);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                return Unauthorized(ex.Message);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"An error occurred while creating the slot: {ex.Message}");
-            }
+            var users = _unitOfWork.User.Find(u => u.Email == emailClaim);
+            var user = users.FirstOrDefault();
+            if (user == null)
+                return Unauthorized("User not found");
+
+            var userId = user.Id;
+            if (user.RoleId != 5) // Kiểm tra role Consultant
+                return Unauthorized("Only consultants (RoleId = 5) can create slots");
+
+            var consultant = await _unitOfWork.Consultant.FindAsync(c => c.UserId == userId);
+            var firstConsultant = consultant.FirstOrDefault();
+            if (firstConsultant == null)
+                return Unauthorized("User is not a registered consultant");
+
+            await _appointmentService.CreateSlotAsync(userId, request);
+
+            // Lời gọi này giờ sẽ hoạt động vì chữ ký của `GetAvailableSlots` đã được thay đổi để khớp.
+            return CreatedAtAction(nameof(GetAvailableSlots), new { consultantId = firstConsultant.Id, date = request.StartTime.Date }, null);
         }
     }
 }
