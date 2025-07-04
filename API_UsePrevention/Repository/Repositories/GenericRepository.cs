@@ -61,7 +61,10 @@ namespace Repository.Repositories
         {
             return _dbSet.AsQueryable();
         }
-
+        public IQueryable<T> Find(Expression<Func<T, bool>> predicate)
+        {
+            return _dbSet.Where(predicate);
+        }
         public IGenericRepository<CommunityProgram> CommunityProgramRepository
     => _communityProgramRepository ??= new GenericRepository<CommunityProgram>(_context);
         private IGenericRepository<CommunityProgram> _communityProgramRepository;
