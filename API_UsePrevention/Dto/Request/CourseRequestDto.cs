@@ -17,5 +17,6 @@ namespace Dto.Request
         public string? ImageUrl { get; set; }
         public string? AdditionalInfo { get; set; }
         public bool? IsActive { get; set; }
+        public string CourseGrade { get; set; }
     }
 }

@@ -34,7 +34,7 @@ namespace API_UsePrevention.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> Create([FromBody] CommunityProgramDto dto)
         {
             if (!ModelState.IsValid)
@@ -45,7 +45,7 @@ namespace API_UsePrevention.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> Update(int id, [FromBody] CommunityProgramDto dto)
         {
             if (!ModelState.IsValid)
@@ -58,7 +58,7 @@ namespace API_UsePrevention.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "ADMIN")]
 
         public async Task<IActionResult> Delete(int id)
         {
