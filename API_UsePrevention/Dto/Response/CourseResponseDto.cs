@@ -19,5 +19,6 @@ namespace Dto.Response
         public string AdditionalInfo { get; set; }
         public DateTime? CreatedAt { get; set; }
         public bool? IsActive { get; set; }
+        public string CourseGrade { get; set; }
     }
 }

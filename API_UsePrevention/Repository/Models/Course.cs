@@ -29,5 +29,7 @@ public partial class Course
 
     public bool? IsActive { get; set; }
 
+    public string CourseGrade { get; set; }
+
     public virtual ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
 }

@@ -16,7 +16,7 @@ namespace Repository.Models
         public DrugUsePreventionSupportSystemContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<DrugUsePreventionSupportSystemContext>();
-            optionsBuilder.UseSqlServer("Data Source=localhost;Initial Catalog=DrugUsePreventionSupportSystem;Persist Security Info=True;User ID=sa;Password=12345;Encrypt=False;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Data Source=localhost;Initial Catalog=DrugUsePreventionSupportSystem;Persist Security Info=True;User ID=sa;Password=123456789;Encrypt=False;Trust Server Certificate=True");
 
             return new DrugUsePreventionSupportSystemContext(optionsBuilder.Options);
         }
