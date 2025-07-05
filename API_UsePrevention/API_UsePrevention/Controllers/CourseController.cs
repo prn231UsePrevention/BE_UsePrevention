@@ -37,7 +37,7 @@ namespace API_UsePrevention.Controllers
                 return NotFound();
             }
         }
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CourseRequestDto request)
         {
@@ -48,7 +48,7 @@ namespace API_UsePrevention.Controllers
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] CourseRequestDto request)
         {
@@ -66,7 +66,7 @@ namespace API_UsePrevention.Controllers
             }
         }
 
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
