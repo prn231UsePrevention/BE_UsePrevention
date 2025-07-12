@@ -20,6 +20,37 @@ namespace API_UsePrevention.Controllers
             _userService = userService;
         }
 
+        [HttpGet("my-user")]
+        [Authorize]
+        public async Task<IActionResult> GetMyUserInfo()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized(new { message = "Invalid token." });
+            }
+
+            var user = await _userService.GetByIdAsync(userId);
+
+            if (user == null)
+                return NotFound(new { message = "User not found." });
+
+            var dto = new MyUserDto
+            {
+                FullName = user.FullName,
+                Email = user.Email,
+                DateOfBirth = user.DateOfBirth,
+                Gender = user.Gender,
+                CreatedAt = user.CreatedAt,
+                IsActive = user.IsActive,
+                Role = role
+            };
+
+            return Ok(dto);
+        }
+
         [HttpPost("create-role")]
         public async Task<IActionResult> CreateRole([FromBody] CreateRoleRequest request)
         {

@@ -1,26 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Dto.Request
 {
-    public class CreateAppointmentRequestDto
+    public class CreateSlotRequestDto
     {
-        public int ConsultantId { get; set; }
-        public DateTime DateTime { get; set; }
-        public string Note { get; set; }
+        [Required]
+        public DateTime StartTime { get; set; }
     }
 
-    public class UpdateAppointmentStatusRequestDto
+    public class BookSlotRequestDto
     {
-        public string Status { get; set; }
+        [Required]
+        public int SlotId { get; set; } // Là Appointment.Id
+        public string Note { get; set; }
     }
 
     public class GetAvailableSlotsRequestDto
     {
+        [Required]
         public int ConsultantId { get; set; }
+        [Required]
         public DateTime Date { get; set; }
+    }
+
+    public class UpdateAppointmentStatusRequestDto
+    {
+        [Required]
+        public string Status { get; set; }
     }
 }

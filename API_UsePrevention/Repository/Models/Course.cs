@@ -15,9 +15,21 @@ public partial class Course
 
     public string TargetGroup { get; set; }
 
+    public string Location { get; set; }
+
+    public DateTime? StartDate { get; set; }
+
+    public DateTime? EndDate { get; set; }
+
+    public string ImageUrl { get; set; }
+
+    public string AdditionalInfo { get; set; }
+
     public DateTime? CreatedAt { get; set; }
 
     public bool? IsActive { get; set; }
+
+    public string CourseGrade { get; set; }
 
     public virtual ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
 }

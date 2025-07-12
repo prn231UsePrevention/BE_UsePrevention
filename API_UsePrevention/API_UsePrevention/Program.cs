@@ -44,10 +44,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-
-
-
-
 builder.Services.AddAutoMapper(typeof(Service.Mappings.ParticipationProfile).Assembly);
 builder.Services.AddSwaggerWithJwt();
 

@@ -17,5 +17,7 @@ public partial class CommunityProgram
 
     public DateTime? EndDate { get; set; }
 
+    public string ImgUrl { get; set; }
+
     public virtual ICollection<Participation> Participations { get; set; } = new List<Participation>();
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository.Models;
 
@@ -11,9 +12,11 @@ using Repository.Models;
 namespace Repository.Migrations
 {
     [DbContext(typeof(DrugUsePreventionSupportSystemContext))]
-    partial class DrugUsePreventionSupportSystemContextModelSnapshot : ModelSnapshot
+    [Migration("20250628071528_AddFieldsToCourse")]
+    partial class AddFieldsToCourse
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -229,10 +232,6 @@ namespace Repository.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime");
 
-                    b.Property<string>("ImgUrl")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("ImgUrl");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -287,9 +286,6 @@ namespace Repository.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AdditionalInfo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CourseGrade")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("CreatedAt")

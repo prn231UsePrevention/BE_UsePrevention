@@ -29,9 +29,15 @@ namespace Service.Service
                 Id = c.Id,
                 Title = c.Title,
                 Description = c.Description,
-                TargetGroup = c.TargetGroup,
+                TargetAudience = c.TargetGroup?.Split(", ").ToList() ?? new(),
+                Location = c.Location,
+                StartDate = c.StartDate,
+                EndDate = c.EndDate,
+                ImageUrl = c.ImageUrl,
+                AdditionalInfo = c.AdditionalInfo,
                 CreatedAt = c.CreatedAt,
-                IsActive = c.IsActive
+                IsActive = c.IsActive,
+                CourseGrade = c.CourseGrade,
             });
         }
 
@@ -39,17 +45,22 @@ namespace Service.Service
         {
             var course = await _unitOfWork.Course.GetByIdAsync(id);
             if (course == null)
-            {
                 throw new KeyNotFoundException("Course not found");
-            }
+
             return new CourseResponseDto
             {
                 Id = course.Id,
                 Title = course.Title,
                 Description = course.Description,
-                TargetGroup = course.TargetGroup,
+                TargetAudience = course.TargetGroup?.Split(", ").ToList() ?? new(),
+                Location = course.Location,
+                StartDate = course.StartDate,
+                EndDate = course.EndDate,
+                ImageUrl = course.ImageUrl,
+                AdditionalInfo = course.AdditionalInfo,
                 CreatedAt = course.CreatedAt,
-                IsActive = course.IsActive
+                IsActive = course.IsActive,
+                CourseGrade = course.CourseGrade,
             };
         }
 
@@ -59,9 +70,17 @@ namespace Service.Service
             {
                 Title = request.Title,
                 Description = request.Description,
-                TargetGroup = request.TargetGroup,
+                TargetGroup = string.Join(", ", request.TargetAudience),
+                Location = request.Location,
+                StartDate = request.StartDate,
+                EndDate = request.EndDate,
+                ImageUrl = string.IsNullOrWhiteSpace(request.ImageUrl)
+                    ? "https://via.placeholder.com/300x200?text=Khóa+học"
+                    : request.ImageUrl,
+                AdditionalInfo = request.AdditionalInfo,
                 CreatedAt = DateTime.UtcNow,
-                IsActive = request.IsActive ?? true
+                IsActive = request.IsActive ?? true,
+                CourseGrade = request.CourseGrade,
             };
 
             await _unitOfWork.Course.AddAsync(course);
@@ -72,9 +91,15 @@ namespace Service.Service
                 Id = course.Id,
                 Title = course.Title,
                 Description = course.Description,
-                TargetGroup = course.TargetGroup,
+                TargetAudience = request.TargetAudience,
+                Location = course.Location,
+                StartDate = course.StartDate,
+                EndDate = course.EndDate,
+                ImageUrl = course.ImageUrl,
+                AdditionalInfo = course.AdditionalInfo,
                 CreatedAt = course.CreatedAt,
-                IsActive = course.IsActive
+                IsActive = course.IsActive,
+                CourseGrade = course.CourseGrade,
             };
         }
 
@@ -86,8 +111,14 @@ namespace Service.Service
 
             course.Title = request.Title;
             course.Description = request.Description;
-            course.TargetGroup = request.TargetGroup;
+            course.TargetGroup = string.Join(", ", request.TargetAudience);
+            course.Location = request.Location;
+            course.StartDate = request.StartDate;
+            course.EndDate = request.EndDate;
+            course.ImageUrl = request.ImageUrl;
+            course.AdditionalInfo = request.AdditionalInfo;
             course.IsActive = request.IsActive;
+            course.CourseGrade = request.CourseGrade;
 
             await _unitOfWork.Course.UpdateAsync(course);
             await _unitOfWork.CommitAsync();
@@ -97,9 +128,15 @@ namespace Service.Service
                 Id = course.Id,
                 Title = course.Title,
                 Description = course.Description,
-                TargetGroup = course.TargetGroup,
+                TargetAudience = request.TargetAudience,
+                Location = course.Location,
+                StartDate = course.StartDate,
+                EndDate = course.EndDate,
+                ImageUrl = course.ImageUrl,
+                AdditionalInfo = course.AdditionalInfo,
                 CreatedAt = course.CreatedAt,
-                IsActive = course.IsActive
+                IsActive = course.IsActive,
+                CourseGrade = course.CourseGrade,
             };
         }
 

@@ -38,7 +38,8 @@ namespace Service.Service
                 Name = dto.Name,
                 Description = dto.Description,
                 StartDate = dto.StartDate,
-                EndDate = dto.EndDate
+                EndDate = dto.EndDate,
+                ImgUrl = dto.ImgUrl
             };
             await _unitOfWork.CommunityProgram.AddAsync(program);
             await _unitOfWork.CommitAsync();
@@ -54,6 +55,7 @@ namespace Service.Service
             program.Description = dto.Description;
             program.StartDate = dto.StartDate;
             program.EndDate = dto.EndDate;
+            program.ImgUrl = dto.ImgUrl;
 
             await _unitOfWork.CommunityProgram.UpdateAsync(program);
              await _unitOfWork.CommitAsync();

@@ -12,10 +12,9 @@ namespace Service.Interface
     {
         Task<IEnumerable<FeedbackDto>> GetAllAsync();
         Task<FeedbackDto?> GetByIdAsync(int id);
-        Task<FeedbackDto> CreateAsync(CreateFeedbackDto dto);
+        Task<FeedbackDto> CreateAsync(CreateFeedbackDto dto, int userId);
         Task<bool> DeleteAsync(int id);
-
-        Task<FeedbackDto?> UpdateAsync(int id, UpdateFeedbackDto dto);
+        Task<FeedbackDto?> UpdateAsync(int id, UpdateFeedbackDto dto, int userId);
 
     }
 

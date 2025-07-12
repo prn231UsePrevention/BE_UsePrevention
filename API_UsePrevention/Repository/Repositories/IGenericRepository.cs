@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Repository.Repositories
 {
-    public interface IGenericRepository<T> 
+    public interface IGenericRepository<T>
     {
         Task<IEnumerable<T>> GetAll();
         Task<T> GetByIdAsync(int id);
@@ -18,7 +18,7 @@ namespace Repository.Repositories
         IQueryable<T> Query();
         Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
         Task AddRangeAsync(IEnumerable<T> entities);
-
+        IQueryable<T> Find(Expression<Func<T, bool>> predicate);
         IGenericRepository<CommunityProgram> CommunityProgramRepository { get; }
 
     }
