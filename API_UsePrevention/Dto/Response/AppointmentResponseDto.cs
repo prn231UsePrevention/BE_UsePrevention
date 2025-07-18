@@ -20,6 +20,7 @@ namespace Dto.Response
         public int SlotId { get; set; } // Là Appointment.Id
         public DateTime Start { get; set; }
         public DateTime End { get; set; } // Tính toán: DateTime + 1 giờ
+        public int ConsultantId { get; set; } // Consultant.Id
     }
 
     public class AppointmentResponseDto

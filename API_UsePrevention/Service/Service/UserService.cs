@@ -83,7 +83,7 @@ namespace Service.Service
         public async Task<LoginResponseDto> LoginAsync(LoginRequest dto)
         {
             var user = await _unitOfWork.User.Query()
-                .Include(u => u.Role)  
+                .Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.Email == dto.Email);
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
@@ -144,5 +144,13 @@ namespace Service.Service
             return new string(Enumerable.Repeat(chars, 8)
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
+
+        public async Task<Consultant> GetConsultantByUserIdAsync(int userId)
+        {
+            return await _unitOfWork.Consultant
+                .Query()
+                .Include(c => c.User)
+                .FirstOrDefaultAsync(c => c.UserId == userId);
+        } 
     }
 }
