@@ -2,6 +2,7 @@
 using Dto.Response;
 using Repository.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,7 @@ namespace Service.Interface
     {
         Task<IEnumerable<ConsultantResponseDto>> GetConsultantsAsync();
         Task<IEnumerable<AvailableSlotResponseDto>> GetAvailableSlotsAsync(GetAvailableSlotsRequestDto request);
+        Task<IEnumerable<AvailableSlotResponseDto>> GetAllAvailableSlotsAsync();
         Task<AppointmentResponseDto> BookSlotAsync(int userId, BookSlotRequestDto request);
         Task<IEnumerable<AppointmentResponseDto>> GetUserAppointmentsAsync(int userId);
         Task<IEnumerable<AppointmentResponseDto>> GetConsultantAppointmentsAsync(int consultantId);
