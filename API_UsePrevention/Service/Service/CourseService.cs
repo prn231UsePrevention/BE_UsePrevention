@@ -1,5 +1,6 @@
 ﻿using Dto.Request;
 using Dto.Response;
+using Microsoft.EntityFrameworkCore;
 using Repository.Models;
 using Repository.Repositories;
 using Repository.UWO;
@@ -149,5 +150,29 @@ namespace Service.Service
             await _unitOfWork.Course.DeleteAsync(course);
             await _unitOfWork.CommitAsync();
         }
+
+        public async Task<IEnumerable<CourseResponseDto>> GetCoursesByUserIdAsync(int userId)
+        {
+            var enrollments = await _unitOfWork.Enrollment
+                .Query()
+                .Include(e => e.Course)
+                .Where(e => e.UserId == userId)
+                .ToListAsync();
+
+            return enrollments
+                .Where(e => e.Course != null)
+                .Select(e => new CourseResponseDto
+                {
+                    Id = e.Course.Id,
+                    Title = e.Course.Title,
+                    Description = e.Course.Description,
+                    Location = e.Course.Location,
+                    StartDate = e.Course.StartDate,
+                    EndDate = e.Course.EndDate,
+                    ImageUrl = e.Course.ImageUrl,
+                    AdditionalInfo = e.Course.AdditionalInfo
+                });
+        }
+
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Repository.Models;
 using Service.Interface;
+using Service.Service;
 using System.Security.Claims;
 
 namespace API_UsePrevention.Controllers
@@ -14,10 +15,12 @@ namespace API_UsePrevention.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly ICourseService _courseService;
 
-        public UsersController(IUserService userService)
+        public UsersController(IUserService userService, ICourseService courseService)
         {
             _userService = userService;
+            _courseService = courseService;
         }
 
         [HttpGet("my-user")]
@@ -176,6 +179,14 @@ namespace API_UsePrevention.Controllers
             {
                 return BadRequest(new { message = ex.Message });
             }
+        }
+
+
+        [HttpGet("{userId}/registered-courses")]
+        public async Task<IActionResult> GetRegisteredCourses(int userId)
+        {
+            var courses = await _courseService.GetCoursesByUserIdAsync(userId);
+            return Ok(courses);
         }
 
         [HttpGet("consultant/{userId}")]

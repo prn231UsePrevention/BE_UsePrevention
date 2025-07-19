@@ -15,5 +15,6 @@ namespace Service.Interface
         Task<CourseResponseDto> CreateAsync(CourseRequestDto request);
         Task<CourseResponseDto> UpdateAsync(int id, CourseRequestDto request);
         Task DeleteAsync(int id);
+        Task<IEnumerable<CourseResponseDto>> GetCoursesByUserIdAsync(int userId);
     }
 }
