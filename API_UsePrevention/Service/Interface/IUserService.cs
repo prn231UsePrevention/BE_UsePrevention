@@ -21,5 +21,6 @@ namespace Service.Interface
         Task ChangePasswordAsync(int userId, string newPassword);
         Task<Role> CreateRoleAsync(CreateRoleRequest role);
         Task ForgotPasswordAsync(string email);
+        Task<Consultant> GetConsultantByUserIdAsync(int userId);
     }
 }

@@ -42,6 +42,7 @@ namespace API_UsePrevention.Controllers
 
             var dto = new MyUserDto
             {
+                UserId = user.Id,
                 FullName = user.FullName,
                 Email = user.Email,
                 DateOfBirth = user.DateOfBirth,
@@ -180,6 +181,7 @@ namespace API_UsePrevention.Controllers
             }
         }
 
+
         [HttpGet("{userId}/registered-courses")]
         public async Task<IActionResult> GetRegisteredCourses(int userId)
         {
@@ -187,6 +189,28 @@ namespace API_UsePrevention.Controllers
             return Ok(courses);
         }
 
+        [HttpGet("consultant/{userId}")]
+        public async Task<IActionResult> GetConsultantByUserId(int userId)
+        {
+            var consultant = await _userService.GetConsultantByUserIdAsync(userId);
+            if (consultant == null)
+                return NotFound(new { message = "Consultant not found for the specified UserId." });
+
+            return Ok(new
+            {
+                consultant.Id,
+                consultant.UserId,
+                consultant.Degree,
+                consultant.Specialty,
+                consultant.WorkSchedule,
+                User = new
+                {
+                    consultant.User.Id,
+                    consultant.User.FullName,
+                    consultant.User.Email
+                }
+            });
+        }
 
     }
 }

@@ -67,6 +67,20 @@ namespace API_UsePrevention.Controllers
             }
         }
 
+        [HttpGet("all-available-slots")]
+        public async Task<ActionResult<IEnumerable<AvailableSlotResponseDto>>> GetAllAvailableSlots()
+        {
+            try
+            {
+                var slots = await _appointmentService.GetAllAvailableSlotsAsync();
+                return Ok(slots);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
         [HttpPost("book")]
         [Authorize]
         public async Task<ActionResult> BookSlot([FromBody] BookSlotRequestDto request)

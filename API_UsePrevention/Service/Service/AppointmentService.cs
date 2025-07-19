@@ -2,6 +2,7 @@
 using Common.helper;
 using Dto.Request;
 using Dto.Response;
+using Microsoft.EntityFrameworkCore;
 using Repository.Models;
 using Repository.UWO;
 using Service.Interface;
@@ -27,7 +28,11 @@ namespace Service.Service
 
         public async Task<IEnumerable<ConsultantResponseDto>> GetConsultantsAsync()
         {
-            var consultants = await _unitOfWork.Consultant.FindAsync(c => true);
+            var consultants = await _unitOfWork.Consultant
+                .Query()
+                .Include(c => c.User) 
+                .ToListAsync();
+
             return _mapper.Map<IEnumerable<ConsultantResponseDto>>(consultants);
         }
 
@@ -38,8 +43,8 @@ namespace Service.Service
                 throw new KeyNotFoundException("Consultant not found");
 
             var slots = await _unitOfWork.Appointment.FindAsync(a =>
-                a.ConsultantId == request.ConsultantId &&
-                a.DateTime.Date == request.Date.Date &&
+                (a.ConsultantId == request.ConsultantId ||
+                a.DateTime.Date == request.Date.Date) &&
                 a.Status == "Available" &&
                 a.UserId == null);
 
@@ -47,7 +52,27 @@ namespace Service.Service
             {
                 SlotId = a.Id, // Appointment.Id
                 Start = a.DateTime,
-                End = a.DateTime.AddHours(1) // Mỗi slot kéo dài 1 tiếng
+                End = a.DateTime.AddHours(1), // Mỗi slot kéo dài 1 tiếng
+                ConsultantId = a.ConsultantId,
+            });
+        }
+
+        public async Task<IEnumerable<AvailableSlotResponseDto>> GetAllAvailableSlotsAsync()
+        {
+            var slots = await _unitOfWork.Appointment
+                .Query()
+                .Include(a => a.Consultant)
+                .ThenInclude(c => c.User)
+                .Where(a => a.Status == "Available" && a.UserId == null)
+                .OrderBy(a => a.DateTime)
+                .ToListAsync();
+
+            return slots.Select(a => new AvailableSlotResponseDto
+            {
+                SlotId = a.Id,
+                Start = a.DateTime,
+                End = a.DateTime.AddHours(1),
+                ConsultantId = a.ConsultantId,
             });
         }
 
@@ -82,14 +107,19 @@ namespace Service.Service
 
         public async Task<IEnumerable<AppointmentResponseDto>> GetUserAppointmentsAsync(int userId)
         {
-            var appointments = await _unitOfWork.Appointment.FindAsync(a => a.UserId == userId && a.Status != "Available");
+            var appointments = await _unitOfWork.Appointment
+                .Query()
+                .Include(a => a.Consultant)
+                .ThenInclude(c => c.User) // Nạp thông tin User của Consultant
+                .Include(a => a.User) // Nạp thông tin User của Appointment
+                .Where(a => a.UserId == userId && a.Status != "Available")
+                .ToListAsync();
+
             var result = _mapper.Map<IEnumerable<AppointmentResponseDto>>(appointments);
             foreach (var appointmentDto in result)
             {
-                var user = await _unitOfWork.User.GetByIdAsync(appointmentDto.UserId ?? 0);
-                var consultant = await _unitOfWork.Consultant.GetByIdAsync(appointmentDto.ConsultantId);
-                appointmentDto.UserFullName = user?.FullName ?? "Unknown";
-                appointmentDto.ConsultantFullName = consultant?.User?.FullName ?? "Unknown";
+                appointmentDto.UserFullName = appointments.First(a => a.Id == appointmentDto.Id).User?.FullName ?? "Unknown";
+                appointmentDto.ConsultantFullName = appointments.First(a => a.Id == appointmentDto.Id).Consultant?.User?.FullName ?? "Unknown";
                 appointmentDto.EndTime = appointmentDto.StartTime.AddHours(1);
             }
             return result;
@@ -129,9 +159,6 @@ namespace Service.Service
             var appointment = await _unitOfWork.Appointment.GetByIdAsync(appointmentId);
             if (appointment == null)
                 throw new KeyNotFoundException("Appointment not found");
-
-            if (appointment.Status != "Pending")
-                throw new InvalidOperationException("Only pending appointments can be cancelled");
 
             var isConsultant = await _unitOfWork.Consultant.GetByIdAsync(userId) != null;
             if (userRole == "Member" && appointment.UserId != userId)
