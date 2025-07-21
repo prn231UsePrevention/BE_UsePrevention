@@ -30,7 +30,7 @@ namespace Service.Service
         {
             var consultants = await _unitOfWork.Consultant
                 .Query()
-                .Include(c => c.User) 
+                .Include(c => c.User)
                 .ToListAsync();
 
             return _mapper.Map<IEnumerable<ConsultantResponseDto>>(consultants);
@@ -222,5 +222,59 @@ namespace Service.Service
             await _unitOfWork.Appointment.AddAsync(slot);
             await _unitOfWork.CommitAsync();
         }
+
+        public async Task<RevisitAppointmentResponseDto> ScheduleRevisitAsync(int consultantUserId, int previousAppointmentId, DateTime newTime)
+        {
+
+            var consultant = await _unitOfWork.Consultant
+     .Query()
+     .Include(c => c.User)
+     .FirstOrDefaultAsync(c => c.UserId == consultantUserId);
+
+            if (consultant == null)
+                throw new UnauthorizedAccessException("Consultant not found");
+
+
+
+            var previousAppointment = await _unitOfWork.Appointment.GetByIdAsync(previousAppointmentId);
+            if (previousAppointment == null || previousAppointment.ConsultantId != consultant.Id)
+                throw new ArgumentException("Invalid previous appointment");
+
+            if (previousAppointment.Status != "Completed")
+                throw new InvalidOperationException("Only completed appointments can have revisits");
+
+
+            var conflict = await _unitOfWork.Appointment.FindAsync(a =>
+                a.ConsultantId == consultant.Id &&
+                a.DateTime == newTime &&
+                a.Status != "Cancelled");
+
+            if (conflict.Any())
+                throw new InvalidOperationException("A slot already exists at the given time");
+
+
+            var revisitSlot = new Appointment
+            {
+                ConsultantId = consultant.Id,
+                UserId = previousAppointment.UserId,
+                DateTime = newTime,
+                Status = "Pending",
+                Note = "Revisit appointment",
+                IsRevisit = true,
+                ParentAppointmentId = previousAppointment.Id
+            };
+
+            await _unitOfWork.Appointment.AddAsync(revisitSlot);
+            await _unitOfWork.CommitAsync();
+
+            var user = await _unitOfWork.User.GetByIdAsync(revisitSlot.UserId ?? 0);
+            var response = _mapper.Map<RevisitAppointmentResponseDto>(revisitSlot);
+            response.UserFullName = user?.FullName ?? "Unknown";
+            response.ConsultantFullName = consultant.User?.FullName ?? "Unknown";
+            response.StartTime = revisitSlot.DateTime;
+            response.EndTime = revisitSlot.DateTime.AddHours(1);
+            return response;
+        }
+
     }
 }

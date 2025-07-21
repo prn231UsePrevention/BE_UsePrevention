@@ -25,20 +25,57 @@ namespace Service.Service
             _emailService = emailService;
         }
 
+
         public async Task<User> RegisterAsync(RegisterUserDto dto, bool isCustomer = true)
         {
-            int roleId = isCustomer ? 1 : dto.RoleId ?? throw new Exception("RoleId is required for non-customer registration.");
+            var normalizedEmail = dto.Email.Trim().ToLower();
+
+            // Check if email already exists
+            var existingUser = await _unitOfWork.User.Query()
+                .FirstOrDefaultAsync(u => u.Email.ToLower() == normalizedEmail);
+            if (existingUser != null)
+                throw new Exception("Email is already registered.");
+
+            
+
+            int roleId;
+
+            if (isCustomer)
+            {
+                // Get role with Name = "Customer"
+                var customerRole = await _unitOfWork.Role.Query()
+                    .FirstOrDefaultAsync(r => r.Name.ToLower() == "customer");
+
+                if (customerRole == null)
+                    throw new Exception("Role 'Customer' does not exist.");
+
+                roleId = customerRole.Id;
+            }
+            else
+            {
+                if (!dto.RoleId.HasValue)
+                    throw new ArgumentException("RoleId is required for staff registration.");
+
+                // Optional: verify the role exists in DB
+                var roleExists = await _unitOfWork.Role.Query()
+                    .AnyAsync(r => r.Id == dto.RoleId.Value);
+
+                if (!roleExists)
+                    throw new Exception($"Role with ID {dto.RoleId.Value} does not exist.");
+
+                roleId = dto.RoleId.Value;
+            }
 
             var user = new User
             {
                 FullName = dto.FullName,
-                Email = dto.Email,
-                RoleId = roleId,
+                Email = normalizedEmail,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
                 DateOfBirth = dto.DateOfBirth,
                 Gender = dto.Gender,
                 CreatedAt = DateTime.UtcNow,
                 IsActive = true,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password)
+                RoleId = roleId
             };
 
             await _unitOfWork.User.AddAsync(user);
@@ -46,6 +83,7 @@ namespace Service.Service
 
             return user;
         }
+
 
 
 
