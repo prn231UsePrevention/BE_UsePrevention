@@ -27,6 +27,8 @@ namespace Service.Mappings
                 .ForMember(dest => dest.ConsultantFullName, opt => opt.Ignore())
                 .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => src.DateTime))
                 .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.DateTime.AddHours(1)));
+
+            CreateMap<Appointment, RevisitAppointmentResponseDto>();
         }
     }
     }

@@ -22,5 +22,6 @@ namespace Service.Interface
         Task CancelAppointmentAsync(int appointmentId, int userId, string userRole);
         Task<AppointmentResponseDto> GetAppointmentByIdAsync(int appointmentId);
         Task CreateSlotAsync(int userId, CreateSlotRequestDto request);
+        Task<RevisitAppointmentResponseDto> ScheduleRevisitAsync(int consultantUserId, int previousAppointmentId, DateTime newTime);
     }
 }

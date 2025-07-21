@@ -19,6 +19,9 @@ public partial class Appointment
 
     public string Note { get; set; }
 
+    public bool IsRevisit { get; set; } = false; 
+    public int? ParentAppointmentId { get; set; } 
+
     public virtual Consultant Consultant { get; set; }
 
     public virtual User User { get; set; }

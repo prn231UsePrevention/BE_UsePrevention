@@ -295,5 +295,36 @@ namespace API_UsePrevention.Controllers
             // Lời gọi này giờ sẽ hoạt động vì chữ ký của `GetAvailableSlots` đã được thay đổi để khớp.
             return CreatedAtAction(nameof(GetAvailableSlots), new { consultantId = firstConsultant.Id, date = request.StartTime.Date }, null);
         }
+
+        [HttpPost("revisit")]
+        [Authorize(Roles = "Consultant")]
+        public async Task<IActionResult> ScheduleRevisit([FromBody] RevisitAppointmentRequestDto request)
+        {
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdStr, out var consultantUserId))
+                return Unauthorized("Invalid user ID");
+
+            try
+            {
+                var result = await _appointmentService.ScheduleRevisitAsync(consultantUserId, request.PreviousAppointmentId, request.NewTime);
+                return Ok(result);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

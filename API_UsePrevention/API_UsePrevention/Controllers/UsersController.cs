@@ -79,10 +79,16 @@ namespace API_UsePrevention.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var user = await _userService.RegisterAsync(dto, isCustomer: true);
-            return Ok(user);
+            try
+            {
+                var user = await _userService.RegisterAsync(dto, isCustomer: true);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
-
 
         [HttpPost("register-staff")]
         public async Task<IActionResult> RegisterStaff([FromBody] RegisterUserDto dto)
@@ -93,9 +99,17 @@ namespace API_UsePrevention.Controllers
             if (!dto.RoleId.HasValue)
                 return BadRequest(new { message = "RoleId is required for staff registration." });
 
-            var user = await _userService.RegisterAsync(dto, isCustomer: false);
-            return Ok(user);
+            try
+            {
+                var user = await _userService.RegisterAsync(dto, isCustomer: false);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
+
 
 
 
