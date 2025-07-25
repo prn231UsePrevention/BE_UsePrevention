@@ -1,4 +1,5 @@
 ﻿using Dto.Request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Repository.Models;
 using Service.Interface;
@@ -32,14 +33,25 @@ namespace API_UsePrevention.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> Create([FromBody] CreateFeedbackDto dto)
         {
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            var created = await _feedbackService.CreateAsync(dto, userId);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            try
+            {
+                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                var created = await _feedbackService.CreateAsync(dto, userId);
+                return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
+
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Customer")]
+
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _feedbackService.DeleteAsync(id);
@@ -47,6 +59,8 @@ namespace API_UsePrevention.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Customer")]
+
         public async Task<IActionResult> Update(int id, [FromBody] UpdateFeedbackDto dto)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));

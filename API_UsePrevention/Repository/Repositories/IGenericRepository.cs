@@ -21,5 +21,8 @@ namespace Repository.Repositories
         IQueryable<T> Find(Expression<Func<T, bool>> predicate);
         IGenericRepository<CommunityProgram> CommunityProgramRepository { get; }
 
+        Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
+
+
     }
 }

@@ -190,8 +190,6 @@ namespace Service.Service
             if (user == null)
                 throw new KeyNotFoundException("User not found");
 
-            if (user.RoleId != 5) // Chỉ Consultant (RoleId = 5) được tạo slot
-                throw new UnauthorizedAccessException("Only consultants (RoleId = 5) can create slots");
 
             var consultant = await _unitOfWork.Consultant.FindAsync(c => c.UserId == userId);
             if (!consultant.Any())

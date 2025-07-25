@@ -176,7 +176,7 @@ namespace API_UsePrevention.Controllers
         }
 
         [HttpPut("{appointmentId}/status")]
-        [Authorize]
+        [Authorize(Roles = "Consultant")]
         public async Task<ActionResult> UpdateAppointmentStatus(int appointmentId, [FromBody] UpdateAppointmentStatusRequestDto request)
         {
             try
@@ -186,9 +186,6 @@ namespace API_UsePrevention.Controllers
                     return Unauthorized("Email claim is missing in the JWT token");
 
                 var users = _unitOfWork.User.Find(u => u.Email == emailClaim);
-                var user = users.FirstOrDefault();
-                if (user == null || user.RoleId != 5) // Chỉ Consultant (RoleId = 5) được cập nhật trạng thái
-                    return Unauthorized("Only consultants (RoleId = 5) can update appointment status");
 
                 await _appointmentService.UpdateAppointmentStatusAsync(appointmentId, request);
                 return NoContent();
@@ -208,7 +205,7 @@ namespace API_UsePrevention.Controllers
         }
 
         [HttpPut("{appointmentId}/cancel")]
-        [Authorize]
+        [Authorize(Roles = "Consultant")]
         public async Task<ActionResult> CancelAppointment(int appointmentId)
         {
             try
@@ -269,7 +266,7 @@ namespace API_UsePrevention.Controllers
         }
 
         [HttpPost("slots")]
-        [Authorize]
+        [Authorize(Roles = "Consultant")]
         public async Task<ActionResult> CreateSlot([FromBody] CreateSlotRequestDto request)
         {
             var emailClaim = User.FindFirst(ClaimTypes.Email)?.Value;
@@ -282,8 +279,6 @@ namespace API_UsePrevention.Controllers
                 return Unauthorized("User not found");
 
             var userId = user.Id;
-            if (user.RoleId != 5) // Kiểm tra role Consultant
-                return Unauthorized("Only consultants (RoleId = 5) can create slots");
 
             var consultant = await _unitOfWork.Consultant.FindAsync(c => c.UserId == userId);
             var firstConsultant = consultant.FirstOrDefault();
