@@ -29,6 +29,7 @@ namespace Service.Mappings
                 .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.DateTime.AddHours(1)));
 
             CreateMap<Appointment, RevisitAppointmentResponseDto>();
+            CreateMap<Result, ResultResponseDto>();
         }
     }
     }
