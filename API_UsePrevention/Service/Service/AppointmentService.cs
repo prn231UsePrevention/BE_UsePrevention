@@ -160,9 +160,6 @@ namespace Service.Service
             if (appointment == null)
                 throw new KeyNotFoundException("Appointment not found");
 
-            var isConsultant = await _unitOfWork.Consultant.GetByIdAsync(userId) != null;
-            if (userRole == "Member" && appointment.UserId != userId)
-                throw new UnauthorizedAccessException("User not authorized to cancel this appointment");
 
             appointment.Status = "Cancelled";
             _unitOfWork.Appointment.UpdateAsync(appointment);
