@@ -261,6 +261,28 @@ public partial class DrugUsePreventionSupportSystemContext : DbContext
 
             entity.HasCheckConstraint("CK_Feedbacks_Rating", "[Rating] BETWEEN 1 AND 5");
         });
+        modelBuilder.Entity<Result>()
+                .HasOne(r => r.Appointment)
+                .WithMany()
+                .HasForeignKey(r => r.AppointmentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Result>()
+            .HasOne(r => r.User)
+            .WithMany()
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Appointment>().ToTable("Appointments", t => t.ExcludeFromMigrations());
+        modelBuilder.Entity<AssessmentResult>().ToTable("AssessmentResults", t => t.ExcludeFromMigrations());
+        modelBuilder.Entity<Assessment>().ToTable("Assessments", t => t.ExcludeFromMigrations());
+        modelBuilder.Entity<BlogPost>().ToTable("BlogPosts", t => t.ExcludeFromMigrations());
+        modelBuilder.Entity<CommunityProgram>().ToTable("CommunityPrograms", t => t.ExcludeFromMigrations());
+        modelBuilder.Entity<Consultant>().ToTable("Consultants", t => t.ExcludeFromMigrations());
+        modelBuilder.Entity<Course>().ToTable("Courses", t => t.ExcludeFromMigrations());
+        modelBuilder.Entity<Enrollment>().ToTable("Enrollments", t => t.ExcludeFromMigrations());
+        modelBuilder.Entity<Participation>().ToTable("Participations", t => t.ExcludeFromMigrations());
+        modelBuilder.Entity<Role>().ToTable("Roles", t => t.ExcludeFromMigrations());
+        modelBuilder.Entity<User>().ToTable("Users", t => t.ExcludeFromMigrations());
 
 
         OnModelCreatingPartial(modelBuilder);

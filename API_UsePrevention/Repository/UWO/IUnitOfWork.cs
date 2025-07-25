@@ -25,6 +25,7 @@ namespace Repository.UWO
         IGenericRepository<AssessmentAnswer> AssessmentAnswer { get; }
 
         IGenericRepository<Feedback> Feedback { get; }
+        IGenericRepository<Result> Result { get; }
         Task<int> CommitAsync();
     }
 }
