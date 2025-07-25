@@ -176,7 +176,7 @@ namespace API_UsePrevention.Controllers
         }
 
         [HttpPut("{appointmentId}/status")]
-        [Authorize(Roles = "Consultant")]
+        [Authorize(Roles = "Consultant, Customer")]
         public async Task<ActionResult> UpdateAppointmentStatus(int appointmentId, [FromBody] UpdateAppointmentStatusRequestDto request)
         {
             try
@@ -205,7 +205,7 @@ namespace API_UsePrevention.Controllers
         }
 
         [HttpPut("{appointmentId}/cancel")]
-        [Authorize(Roles = "Consultant")]
+        [Authorize(Roles = "Consultant,Customer")]
         public async Task<ActionResult> CancelAppointment(int appointmentId)
         {
             try
