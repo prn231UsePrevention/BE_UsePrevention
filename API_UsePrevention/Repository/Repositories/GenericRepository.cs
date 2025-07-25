@@ -65,6 +65,12 @@ namespace Repository.Repositories
         {
             return _dbSet.Where(predicate);
         }
+
+        public async Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbSet.FirstOrDefaultAsync(predicate);
+        }
+
         public IGenericRepository<CommunityProgram> CommunityProgramRepository
     => _communityProgramRepository ??= new GenericRepository<CommunityProgram>(_context);
         private IGenericRepository<CommunityProgram> _communityProgramRepository;

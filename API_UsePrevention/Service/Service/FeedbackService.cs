@@ -36,13 +36,30 @@ namespace Service.Service
 
         public async Task<FeedbackDto> CreateAsync(CreateFeedbackDto dto, int userId)
         {
+            // Kiểm tra xem feedback đã tồn tại chưa
+            var existingFeedback = await _unitOfWork.Feedback
+                .GetFirstOrDefaultAsync(f =>
+                    f.UserId == userId &&
+                    f.AppointmentId == dto.AppointmentId &&
+                    f.ConsultantId == dto.ConsultantId
+                );
+
+            if (existingFeedback != null)
+            {
+                throw new InvalidOperationException("Feedback already exists for this appointment and consultant.");
+            }
+
+            // Nếu chưa tồn tại, tạo mới
             var feedback = _mapper.Map<Feedback>(dto);
             feedback.UserId = userId;
             feedback.CreatedAt = DateTime.Now;
+
             await _unitOfWork.Feedback.AddAsync(feedback);
             await _unitOfWork.CommitAsync();
+
             return _mapper.Map<FeedbackDto>(feedback);
         }
+
 
         public async Task<bool> DeleteAsync(int id)
         {
