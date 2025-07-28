@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository.Models;
 
@@ -11,9 +12,11 @@ using Repository.Models;
 namespace Repository.Migrations
 {
     [DbContext(typeof(DrugUsePreventionSupportSystemContext))]
-    partial class DrugUsePreventionSupportSystemContextModelSnapshot : ModelSnapshot
+    [Migration("20250728172301_AddReviewFieldsToResult")]
+    partial class AddReviewFieldsToResult
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -585,6 +588,13 @@ namespace Repository.Migrations
                     b.Property<string>("Recommendation")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReviewComment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ReviewRating")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");

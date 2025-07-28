@@ -55,5 +55,35 @@ namespace Service.Service
             await _unitOfWork.Result.DeleteAsync(result);
             await _unitOfWork.CommitAsync();
         }
+
+        public async Task<int> CreateResultAsync(CreateResultRequestDto request)
+        {
+            // Kiểm tra appointment hợp lệ
+            var appointment = await _unitOfWork.Appointment.GetByIdAsync(request.AppointmentId);
+            if (appointment == null)
+                throw new KeyNotFoundException("Appointment not found");
+            if (appointment.Status != "Completed")
+                throw new InvalidOperationException("Only completed appointments can have results");
+
+            // Kiểm tra đã tồn tại result cho appointment này chưa (nếu muốn giới hạn 1-1)
+            var existing = (await _unitOfWork.Result.FindAsync(r => r.AppointmentId == request.AppointmentId && r.UserId == request.UserId)).FirstOrDefault();
+            if (existing != null)
+                throw new InvalidOperationException("Result for this appointment and user already exists");
+
+            // Tạo mới result
+            var result = new Repository.Models.Result
+            {
+                AppointmentId = request.AppointmentId,
+                UserId = request.UserId,
+                Diagnosis = request.Diagnosis,
+                Recommendation = request.Recommendation,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            };
+
+            await _unitOfWork.Result.AddAsync(result);
+            await _unitOfWork.CommitAsync();
+            return result.Id;
+        }
     }
 }
