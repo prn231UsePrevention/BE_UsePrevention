@@ -3,6 +3,7 @@ using Dto.Request;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Repository.Models;
 using Repository.UWO;
 using Service.Interface;
 using System.Security.Claims;
@@ -48,8 +49,9 @@ namespace API_UsePrevention.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var created = await _courseService.CreateAsync(request);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            var created = await _courseService.CreateCourseOnlyAsync(request);
+            //return Ok(new { created });
+            return CreatedAtAction(nameof(GetById), new { id = created }, created);
         }
 
         [Authorize(Roles = "Admin")]

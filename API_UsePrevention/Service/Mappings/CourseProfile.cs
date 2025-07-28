@@ -21,7 +21,8 @@ namespace Service.Mappings
                 .ForMember(dest => dest.Modules,
                     opt => opt.MapFrom(src => src.Modules));
 
-            CreateMap<CourseRating, CourseRatingResponseDto>();
+            CreateMap<CourseRating, CourseRatingResponseDto>()
+    .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Stars));
 
             CreateMap<CourseModule, CourseModuleResponseDto>()
                 .ForMember(dest => dest.Lessons,

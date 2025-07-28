@@ -52,7 +52,7 @@ namespace Service.Service
 
         }
 
-        public async Task<CourseResponseDto> CreateAsync(CourseRequestDto request)
+        public async Task<int> CreateCourseOnlyAsync(CourseRequestDto request)
         {
             var course = new Course
             {
@@ -74,36 +74,62 @@ namespace Service.Service
             await _unitOfWork.Course.AddAsync(course);
             await _unitOfWork.CommitAsync();
 
-            // ✅ Tạo module và lesson
-            foreach (var moduleDto in request.Modules)
-            {
-                var module = new CourseModule
-                {
-                    CourseId = course.Id,
-                    Title = moduleDto.Title
-                };
-
-                await _unitOfWork.CourseModule.AddAsync(module);
-                await _unitOfWork.CommitAsync();
-
-                foreach (var lessonDto in moduleDto.Lessons)
-                {
-                    var lesson = new CourseLesson
-                    {
-                        ModuleId = module.Id,
-                        Title = lessonDto.Title,
-                        Description = lessonDto.Description,
-                        VideoUrl = lessonDto.VideoUrl,
-                        Order = lessonDto.Order
-                    };
-                    await _unitOfWork.CourseLesson.AddAsync(lesson);
-                }
-
-                await _unitOfWork.CommitAsync();
-            }
-
-            return _mapper.Map<CourseResponseDto>(course);
+            return course.Id;
         }
+
+
+        //public async Task<CourseResponseDto> CreateAsync(CourseRequestDto request)
+        //{
+        //    var course = new Course
+        //    {
+        //        Title = request.Title,
+        //        Description = request.Description,
+        //        TargetGroup = string.Join(", ", request.TargetAudience),
+        //        Location = request.Location,
+        //        StartDate = request.StartDate,
+        //        EndDate = request.EndDate,
+        //        ImageUrl = string.IsNullOrWhiteSpace(request.ImageUrl)
+        //            ? "https://via.placeholder.com/300x200?text=Khóa+học"
+        //            : request.ImageUrl,
+        //        AdditionalInfo = request.AdditionalInfo,
+        //        CreatedAt = DateTime.UtcNow,
+        //        IsActive = request.IsActive ?? true,
+        //        CourseGrade = request.CourseGrade,
+        //    };
+
+        //    await _unitOfWork.Course.AddAsync(course);
+        //    await _unitOfWork.CommitAsync();
+
+        //    // ✅ Tạo module và lesson
+        //    foreach (var moduleDto in request.Modules)
+        //    {
+        //        var module = new CourseModule
+        //        {
+        //            CourseId = course.Id,
+        //            Title = moduleDto.Title
+        //        };
+
+        //        await _unitOfWork.CourseModule.AddAsync(module);
+        //        await _unitOfWork.CommitAsync();
+
+        //        foreach (var lessonDto in moduleDto.Lessons)
+        //        {
+        //            var lesson = new CourseLesson
+        //            {
+        //                ModuleId = module.Id,
+        //                Title = lessonDto.Title,
+        //                Description = lessonDto.Description,
+        //                VideoUrl = lessonDto.VideoUrl,
+        //                Order = lessonDto.Order
+        //            };
+        //            await _unitOfWork.CourseLesson.AddAsync(lesson);
+        //        }
+
+        //        await _unitOfWork.CommitAsync();
+        //    }
+
+        //    return _mapper.Map<CourseResponseDto>(course);
+        //}
 
         public async Task<CourseResponseDto> UpdateAsync(int id, CourseRequestDto request)
         {
@@ -228,13 +254,23 @@ namespace Service.Service
 
         public async Task DeleteModuleAsync(int moduleId)
         {
-            var module = await _unitOfWork.CourseModule.GetByIdAsync(moduleId);
+            var module = await _unitOfWork.CourseModule
+                .Query()
+                .Include(m => m.Lessons)
+                .FirstOrDefaultAsync(m => m.Id == moduleId);
+
             if (module == null)
                 throw new KeyNotFoundException("Module not found");
+
+            foreach (var lesson in module.Lessons)
+            {
+                await _unitOfWork.CourseLesson.DeleteAsync(lesson);
+            }
 
             await _unitOfWork.CourseModule.DeleteAsync(module);
             await _unitOfWork.CommitAsync();
         }
+
 
         public async Task DeleteLessonAsync(int lessonId)
         {
@@ -267,6 +303,11 @@ namespace Service.Service
             var module = await _unitOfWork.CourseModule.GetByIdAsync(moduleId);
             if (module == null)
                 throw new KeyNotFoundException("Module not found");
+            var isDuplicate = await _unitOfWork.CourseLesson
+    .Query()
+    .AnyAsync(l => l.ModuleId == moduleId && l.Order == dto.Order);
+            if (isDuplicate)
+                throw new Exception("Lesson order đã tồn tại trong module.");
 
             var lesson = new CourseLesson
             {
