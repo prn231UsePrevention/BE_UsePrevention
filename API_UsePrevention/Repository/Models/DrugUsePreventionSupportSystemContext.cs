@@ -38,6 +38,10 @@ public partial class DrugUsePreventionSupportSystemContext : DbContext
     public virtual DbSet<AssessmentQuestion> AssessmentQuestions { get; set; }
 
     public virtual DbSet<Feedback> Feedbacks { get; set; }
+    public virtual DbSet<Result> Results { get; set; }
+    public virtual DbSet<CourseRating> CourseRatings { get; set; }
+    public virtual DbSet<CourseLesson> CourseLessons { get; set; }
+    public virtual DbSet<CourseModule> CourseModules { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

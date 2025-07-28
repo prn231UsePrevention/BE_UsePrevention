@@ -18,5 +18,7 @@ namespace Dto.Request
         public string? AdditionalInfo { get; set; }
         public bool? IsActive { get; set; }
         public string CourseGrade { get; set; }
+
+        public List<CourseModuleRequestDto> Modules { get; set; } = new();
     }
 }

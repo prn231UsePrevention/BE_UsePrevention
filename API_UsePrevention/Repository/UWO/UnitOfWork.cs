@@ -41,8 +41,10 @@ namespace Repository.UWO
 
         public IGenericRepository<AssessmentAnswer> AssessmentAnswer { get; }
 
+        public IGenericRepository<CourseRating> CourseRating { get; }
         public IGenericRepository<Feedback> Feedback { get; }
-
+        public IGenericRepository<CourseModule> CourseModule { get; }
+        public IGenericRepository<CourseLesson> CourseLesson { get; }
         public IGenericRepository<Result> Result { get;  }
         public UnitOfWork(DrugUsePreventionSupportSystemContext context)
         {
@@ -62,6 +64,9 @@ namespace Repository.UWO
             AssessmentAnswer = new GenericRepository<AssessmentAnswer>(_context);
             Feedback = new GenericRepository<Feedback>(_context);
             Result = new GenericRepository<Result>(_context);
+            CourseRating = new GenericRepository<CourseRating>(_context);
+            CourseLesson = new GenericRepository<CourseLesson>(_context);
+            CourseModule = new GenericRepository<CourseModule>(_context);
         }
 
         public async Task<int> CommitAsync()
