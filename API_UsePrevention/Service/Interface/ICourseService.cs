@@ -12,7 +12,7 @@ namespace Service.Interface
     {
         Task<IEnumerable<CourseResponseDto>> GetAllAsync();
         Task<CourseResponseDto> GetByIdAsync(int id);
-        Task<CourseResponseDto> CreateAsync(CourseRequestDto request);
+        Task<int> CreateCourseOnlyAsync(CourseRequestDto request);
         Task<CourseResponseDto> UpdateAsync(int id, CourseRequestDto request);
         Task DeleteAsync(int id);
         Task<IEnumerable<CourseResponseDto>> GetCoursesByUserIdAsync(int userId);
