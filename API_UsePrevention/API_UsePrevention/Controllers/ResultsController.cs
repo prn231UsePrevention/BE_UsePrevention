@@ -39,7 +39,7 @@ namespace API_UsePrevention.Controllers
                         return Unauthorized("User not found");
 
                     var result = await _resultService.GetResultByIdAsync(resultId);
-                    if (result.UserId != user.Id && user.RoleId != 5) // Chỉ user hoặc consultant được xem
+                    if (result.UserId != user.Id && user.RoleId != 3) // Chỉ user hoặc consultant được xem
                         return Unauthorized("Not authorized to view this result");
 
                     return Ok(result);
@@ -93,7 +93,7 @@ namespace API_UsePrevention.Controllers
                     if (user == null)
                         return Unauthorized("User not found");
 
-                    if (user.RoleId != 5) // Chỉ consultant được cập nhật
+                    if (user.RoleId != 3) // Chỉ consultant được cập nhật
                         return Unauthorized("Only consultants (RoleId = 5) can update results");
 
                     await _resultService.UpdateResultAsync(resultId, request);
@@ -124,7 +124,7 @@ namespace API_UsePrevention.Controllers
                     if (user == null)
                         return Unauthorized("User not found");
 
-                    if (user.RoleId != 5) // Chỉ consultant được xóa
+                    if (user.RoleId != 3) // Chỉ consultant được xóa
                         return Unauthorized("Only consultants (RoleId = 5) can delete results");
 
                     await _resultService.DeleteResultAsync(resultId);
@@ -133,6 +133,42 @@ namespace API_UsePrevention.Controllers
                 catch (KeyNotFoundException ex)
                 {
                     return NotFound(ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, $"An error occurred: {ex.Message}");
+                }
+            }
+
+            [HttpPost]
+            [Authorize]
+            public async Task<IActionResult> PostResult([FromBody] CreateResultRequestDto request)
+            {
+                var emailClaim = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+                if (string.IsNullOrEmpty(emailClaim))
+                    return Unauthorized("Email claim is missing in the JWT token");
+
+                var users = _unitOfWork.User.Find(u => u.Email == emailClaim);
+                var user = users.FirstOrDefault();
+                if (user == null)
+                    return Unauthorized("User not found");
+
+                // Chỉ consultant được tạo kết quả
+                if (user.RoleId != 3)
+                    return Forbid("Only consultants can create result.");
+
+                try
+                {
+                    var newId = await _resultService.CreateResultAsync(request);
+                    return Ok(new { id = newId, message = "Tạo kết quả thành công!" });
+                }
+                catch (KeyNotFoundException ex)
+                {
+                    return NotFound(ex.Message);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    return BadRequest(ex.Message);
                 }
                 catch (Exception ex)
                 {

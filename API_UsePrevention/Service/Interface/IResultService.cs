@@ -15,5 +15,7 @@ namespace Service.Interface
         Task<IEnumerable<ResultResponseDto>> GetResultsByUserIdAsync(int userId);
         Task UpdateResultAsync(int resultId, UpdateResultRequestDto request);
         Task DeleteResultAsync(int resultId);
+        Task<int> CreateResultAsync(CreateResultRequestDto request);
+
     }
 }

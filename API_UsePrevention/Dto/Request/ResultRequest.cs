@@ -13,5 +13,13 @@ namespace Dto.Request
             public string Diagnosis { get; set; }
             public string Recommendation { get; set; }
         }
+
+        public class CreateResultRequestDto
+        {
+            public int AppointmentId { get; set; }
+            public int UserId { get; set; }         
+            public string Diagnosis { get; set; }
+            public string Recommendation { get; set; }
+        }
     }
 }
