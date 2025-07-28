@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository.Models;
 
@@ -11,9 +12,11 @@ using Repository.Models;
 namespace Repository.Migrations
 {
     [DbContext(typeof(DrugUsePreventionSupportSystemContext))]
-    partial class DrugUsePreventionSupportSystemContextModelSnapshot : ModelSnapshot
+    [Migration("20250705035710_updateCourse")]
+    partial class updateCourse
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,14 +39,8 @@ namespace Repository.Migrations
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime");
 
-                    b.Property<bool>("IsRevisit")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Note")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("ParentAppointmentId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Status")
                         .ValueGeneratedOnAdd()
@@ -61,10 +58,7 @@ namespace Repository.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Appointments", null, t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("Appointments");
                 });
 
             modelBuilder.Entity("Repository.Models.Assessment", b =>
@@ -91,10 +85,7 @@ namespace Repository.Migrations
                     b.HasKey("Id")
                         .HasName("PK__Assessme__3214EC07DDD3F8D1");
 
-                    b.ToTable("Assessments", null, t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("Assessments");
                 });
 
             modelBuilder.Entity("Repository.Models.AssessmentAnswer", b =>
@@ -192,10 +183,7 @@ namespace Repository.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AssessmentResults", null, t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("AssessmentResults");
                 });
 
             modelBuilder.Entity("Repository.Models.BlogPost", b =>
@@ -227,10 +215,7 @@ namespace Repository.Migrations
 
                     b.HasIndex("CreatedBy");
 
-                    b.ToTable("BlogPosts", null, t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("BlogPosts");
                 });
 
             modelBuilder.Entity("Repository.Models.CommunityProgram", b =>
@@ -262,10 +247,7 @@ namespace Repository.Migrations
                     b.HasKey("Id")
                         .HasName("PK__Communit__3214EC07B550D2A1");
 
-                    b.ToTable("CommunityPrograms", null, t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("CommunityPrograms");
                 });
 
             modelBuilder.Entity("Repository.Models.Consultant", b =>
@@ -296,10 +278,7 @@ namespace Repository.Migrations
                     b.HasIndex(new[] { "UserId" }, "UQ__Consulta__1788CC4DE92395E5")
                         .IsUnique();
 
-                    b.ToTable("Consultants", null, t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("Consultants");
                 });
 
             modelBuilder.Entity("Repository.Models.Course", b =>
@@ -353,95 +332,7 @@ namespace Repository.Migrations
                     b.HasKey("Id")
                         .HasName("PK__Courses__3214EC073B6739EE");
 
-                    b.ToTable("Courses", null, t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
-                });
-
-            modelBuilder.Entity("Repository.Models.CourseLesson", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ModuleId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("VideoUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ModuleId");
-
-                    b.ToTable("CourseLessons");
-                });
-
-            modelBuilder.Entity("Repository.Models.CourseModule", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CourseId");
-
-                    b.ToTable("CourseModules");
-                });
-
-            modelBuilder.Entity("Repository.Models.CourseRating", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Comment")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Stars")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CourseId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("CourseRatings");
+                    b.ToTable("Courses");
                 });
 
             modelBuilder.Entity("Repository.Models.Enrollment", b =>
@@ -475,10 +366,7 @@ namespace Repository.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Enrollments", null, t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("Enrollments");
                 });
 
             modelBuilder.Entity("Repository.Models.Feedback", b =>
@@ -558,47 +446,7 @@ namespace Repository.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Participations", null, t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
-                });
-
-            modelBuilder.Entity("Repository.Models.Result", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AppointmentId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Diagnosis")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Recommendation")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppointmentId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Results");
+                    b.ToTable("Participations");
                 });
 
             modelBuilder.Entity("Repository.Models.Role", b =>
@@ -620,10 +468,7 @@ namespace Repository.Migrations
                     b.HasIndex(new[] { "Name" }, "UQ__Roles__737584F661CFD168")
                         .IsUnique();
 
-                    b.ToTable("Roles", null, t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("Repository.Models.User", b =>
@@ -677,10 +522,7 @@ namespace Repository.Migrations
                     b.HasIndex(new[] { "Email" }, "UQ__Users__A9D1053428D2FE25")
                         .IsUnique();
 
-                    b.ToTable("Users", null, t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Repository.Models.Appointment", b =>
@@ -772,47 +614,6 @@ namespace Repository.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Repository.Models.CourseLesson", b =>
-                {
-                    b.HasOne("Repository.Models.CourseModule", "Module")
-                        .WithMany("Lessons")
-                        .HasForeignKey("ModuleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Module");
-                });
-
-            modelBuilder.Entity("Repository.Models.CourseModule", b =>
-                {
-                    b.HasOne("Repository.Models.Course", "Course")
-                        .WithMany("Modules")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Course");
-                });
-
-            modelBuilder.Entity("Repository.Models.CourseRating", b =>
-                {
-                    b.HasOne("Repository.Models.Course", "Course")
-                        .WithMany("Ratings")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Repository.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Course");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Repository.Models.Enrollment", b =>
                 {
                     b.HasOne("Repository.Models.Course", "Course")
@@ -878,25 +679,6 @@ namespace Repository.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Repository.Models.Result", b =>
-                {
-                    b.HasOne("Repository.Models.Appointment", "Appointment")
-                        .WithMany()
-                        .HasForeignKey("AppointmentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Repository.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Appointment");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Repository.Models.User", b =>
                 {
                     b.HasOne("Repository.Models.Role", "Role")
@@ -937,15 +719,6 @@ namespace Repository.Migrations
             modelBuilder.Entity("Repository.Models.Course", b =>
                 {
                     b.Navigation("Enrollments");
-
-                    b.Navigation("Modules");
-
-                    b.Navigation("Ratings");
-                });
-
-            modelBuilder.Entity("Repository.Models.CourseModule", b =>
-                {
-                    b.Navigation("Lessons");
                 });
 
             modelBuilder.Entity("Repository.Models.Role", b =>

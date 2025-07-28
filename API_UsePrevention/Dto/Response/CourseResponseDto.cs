@@ -20,5 +20,7 @@ namespace Dto.Response
         public DateTime? CreatedAt { get; set; }
         public bool? IsActive { get; set; }
         public string CourseGrade { get; set; }
+        public List<CourseModuleResponseDto> Modules { get; set; }
+        public List<CourseRatingResponseDto> Ratings { get; set; }
     }
 }
