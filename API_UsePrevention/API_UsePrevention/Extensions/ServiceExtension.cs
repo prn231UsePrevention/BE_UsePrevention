@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Cors.Infrastructure;
 using Repository.UWO;
 using Service.Interface;
+using Service.Interface.Service.Interface;
 using Service.Service;
 
 namespace API_UsePrevention.Extensions
@@ -20,6 +21,10 @@ namespace API_UsePrevention.Extensions
             services.AddScoped<IEnrollmentService, EnrollmentService>();
             services.AddScoped<IResultService, ResultService>();
             services.AddScoped<IConsultantService, ConsultantService>();
+            services.AddScoped<IAssessmentService, AssessmentService>();
+            services.AddScoped<IAssessmentQuestionService, AssessmentQuestionService>();
+            services.AddScoped<IAssessmentAnswerService, AssessmentAnswerService>();
+
             return services;
         }
     }
