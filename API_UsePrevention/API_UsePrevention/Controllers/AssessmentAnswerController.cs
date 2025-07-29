@@ -20,7 +20,7 @@ namespace API_UsePrevention.Controllers
 
        
         [HttpGet("result/{resultId}")]
-        [Authorize(Roles = "USER,ADMIN")]
+        [Authorize(Roles = "Customer,Admin")]
         public async Task<IActionResult> GetAllByResultId(int resultId)
         {
             var answers = await _service.GetAllByResultIdAsync(resultId);
@@ -28,7 +28,7 @@ namespace API_UsePrevention.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "USER,ADMIN")]
+        [Authorize(Roles = "Customer,Admin")]
         public async Task<IActionResult> GetById(int id)
         {
             var answer = await _service.GetByIdAsync(id);
@@ -38,7 +38,7 @@ namespace API_UsePrevention.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "USER,ADMIN")]
+        [Authorize(Roles = "Customer,Admin")]
         public async Task<IActionResult> Create([FromBody] AssessmentAnswerCreateDto dto)
         {
             if (!ModelState.IsValid)
@@ -50,7 +50,7 @@ namespace API_UsePrevention.Controllers
 
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "ADMIN,USER")]
+        [Authorize(Roles = "Admin,Customer")]
         public async Task<IActionResult> Update(int id, [FromBody] AssessmentAnswerUpdateDto dto)
         {
             if (!ModelState.IsValid)
@@ -61,7 +61,7 @@ namespace API_UsePrevention.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "ADMIN,USER")]
+        [Authorize(Roles = "Admin,Customer")]
         public async Task<IActionResult> Delete(int id)
         {
             await _service.DeleteAsync(id);

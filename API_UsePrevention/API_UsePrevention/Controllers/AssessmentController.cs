@@ -19,7 +19,7 @@ namespace API_UsePrevention.Controllers
 
 
         [HttpGet]
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "Admin,Customer")]
         public async Task<IActionResult> GetAll()
         {
             var list = await _assessmentService.GetAllAssessmentsAsync();
@@ -28,6 +28,7 @@ namespace API_UsePrevention.Controllers
 
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,Customer")]
         public async Task<IActionResult> GetById(int id)
         {
             var assessment = await _assessmentService.GetAssessmentByIdAsync(id);
@@ -38,7 +39,7 @@ namespace API_UsePrevention.Controllers
 
 
         [HttpPost]
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] AssessmentCreateDto dto)
         {
             if (!ModelState.IsValid)
@@ -50,7 +51,7 @@ namespace API_UsePrevention.Controllers
 
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, [FromBody] AssessmentUpdateDto dto)
         {
             if (!ModelState.IsValid)
@@ -64,7 +65,7 @@ namespace API_UsePrevention.Controllers
 
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var success = await _assessmentService.DeleteAssessmentAsync(id);
@@ -75,7 +76,7 @@ namespace API_UsePrevention.Controllers
 
 
         [HttpPost("submit")]
-        [Authorize(Roles = "USER,ADMIN")]
+        [Authorize(Roles = "Customer,Admin")]
         public async Task<IActionResult> Submit([FromBody] AssessmentSubmitDto dto)
         {
             if (!ModelState.IsValid)
@@ -87,7 +88,7 @@ namespace API_UsePrevention.Controllers
         }
 
         [HttpGet("results/user/{userId}")]
-        [Authorize(Roles = "USER,ADMIN")]
+        [Authorize(Roles = "Customer,Admin")]
         public async Task<IActionResult> GetResultsByUser(int userId)
         {
             var results = await _assessmentService.GetUserAssessmentResultsAsync(userId);
@@ -96,7 +97,7 @@ namespace API_UsePrevention.Controllers
 
 
         [HttpGet("result/{resultId}")]
-        [Authorize(Roles = "USER,ADMIN")]
+        [Authorize(Roles = "Customer,Admin")]
         public async Task<IActionResult> GetResultById(int resultId)
         {
             var result = await _assessmentService.GetAssessmentResultByIdAsync(resultId);
